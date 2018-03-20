@@ -1,0 +1,124 @@
+﻿using UnityEngine;
+using UnityEditor;
+using System.Text;
+using ProtoBuf.Reflection;
+using Google.Protobuf.Reflection;
+using System.IO;
+namespace LitEngineEditor
+{
+    public class ExportProtoTool : ExportBase
+    {
+        private Vector2 mScrollPosition = Vector2.zero;
+        private StringBuilder mContext = new StringBuilder();
+        public ExportProtoTool(ExportWindow _window):base(_window)
+        {
+            ExWType = ExportWType.PrptoWindow;
+        }
+        override public void OnGUI()
+        {
+
+            mScrollPosition = PublicGUI.DrawScrollview("Console",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 130);
+            GUILayout.Label("ProtoFilePath", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.TextField("", ExportSetting.sProtoFilePath, EditorStyles.textField);
+            if (GUILayout.Button("...", GUILayout.Width(25)))
+            {
+                string toldpath = ExportSetting.sProtoFilePath;
+                toldpath = EditorUtility.OpenFolderPanel("Proto file Path", toldpath, "");
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sProtoFilePath))
+                {
+                    ExportSetting.sProtoFilePath = toldpath;
+                    NeedSaveSetting();
+                }
+                    
+            }
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Label("ExportPath", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.TextField("", ExportSetting.sCSFilePath, EditorStyles.textField);
+            if (GUILayout.Button("...", GUILayout.Width(25)))
+            {
+                string toldpath = ExportSetting.sCSFilePath;
+                toldpath = EditorUtility.OpenFolderPanel("CS file Path", toldpath, "");
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sCSFilePath))
+                {
+                    ExportSetting.sCSFilePath = toldpath;
+                    NeedSaveSetting();
+                }
+                   
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            if (GUILayout.Button("To cs file"))
+            {
+                if (EditorUtility.DisplayDialog("Export", " Start export cs file?", "ok","cancel"))
+                {
+                    ExportCSFile();
+                    UnityEditor.AssetDatabase.Refresh();
+                }
+            }
+        }
+
+        public void AddContext(string _text)
+        {
+            lock(mContext)
+            {
+                mContext.AppendLine(string.Format("[{0}]{1}", System.DateTime.Now, _text));
+            }
+           
+        }
+        public void AddSpace()
+        {
+            lock (mContext)
+            {
+                mContext.AppendLine();
+            }
+            
+        }
+
+        private void ExportCSFile()
+        {
+            AddContext("Start Export:");
+
+            int exitCode = 0;
+            CodeGenerator codegen = CSharpCodeGenerator.Default;
+            var set = new FileDescriptorSet();
+            set.AddImportPath(ExportSetting.sProtoFilePath);
+            string[] tpaths = Directory.GetDirectories(ExportSetting.sProtoFilePath);
+            foreach (string tp in tpaths)
+            {
+                set.AddImportPath(tp);
+            }
+
+            DirectoryInfo tdirfolder = new DirectoryInfo(ExportSetting.sProtoFilePath);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.proto", System.IO.SearchOption.AllDirectories);
+            foreach (var input in tfileinfos)
+            {
+                if (!set.Add(input.Name, true))
+                {
+                    AddContext($"File not found: {input}");
+                    exitCode = 1;
+                }
+            }
+            set.Process();
+            var errors = set.GetErrors();
+            foreach (var err in errors)
+            {
+                if (err.IsError) exitCode++;
+                AddContext(err.ToString());
+            }
+            if (exitCode != 0) return;
+
+            var files = codegen.Generate(set);
+            foreach (var file in files)
+            {
+                var path = Path.Combine(ExportSetting.sCSFilePath, file.Name);
+                File.WriteAllText(path, file.Text);
+            }
+
+            AddContext("Export End.");
+            AddSpace();
+        }
+    }
+}
