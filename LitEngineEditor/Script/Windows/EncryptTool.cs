@@ -16,10 +16,10 @@ namespace LitEngineEditor
 
         override public void OnGUI()
         {
-            GUILayout.Label("EncryptKey", EditorStyles.boldLabel);
-            GUILayout.Label(ExportSetting.sEncryptKey);
+           // GUILayout.Label("EncryptKey", EditorStyles.boldLabel);
+           // GUILayout.Label(ExportSetting.sEncryptKey);
 
-            mScrollPosition = PublicGUI.DrawScrollview("Files",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 120);
+            mScrollPosition = PublicGUI.DrawScrollview("Files",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 150);
 
             GUILayout.Label("EncryptPath", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();

@@ -88,7 +88,7 @@ namespace LitEngineEditor
             if (File.Exists(tdespathname))
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
-            AssetDatabase.Refresh();
+           // AssetDatabase.Refresh();
             Debug.Log("导出完成!");
         }
         #endregion

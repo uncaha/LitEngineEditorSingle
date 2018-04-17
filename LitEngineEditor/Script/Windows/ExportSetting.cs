@@ -68,9 +68,6 @@ namespace LitEngineEditor
                 case "sEncryptPath":
                     SetPath(ref sEncryptPath, _value);
                     break;
-                case "sEncryptKey":
-                    sEncryptKey = _value;
-                    break;
             }
         }
 
@@ -83,7 +80,6 @@ namespace LitEngineEditor
             tbuilder.AppendLine("sProtoFilePath = " + sProtoFilePath);
             tbuilder.AppendLine("sCSFilePath = " + sCSFilePath);
             tbuilder.AppendLine("sEncryptPath = " + sEncryptPath);
-            tbuilder.AppendLine("sEncryptKey = " + sEncryptKey);
 
             File.WriteAllText(tfullpath, tbuilder.ToString());
 
