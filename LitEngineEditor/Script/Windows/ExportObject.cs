@@ -59,7 +59,6 @@ namespace LitEngineEditor
 
             DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
-            string tapppath = System.IO.Directory.GetCurrentDirectory() + "\\";
 
             foreach (FileInfo tfile in tfileinfos)
             {
@@ -67,7 +66,8 @@ namespace LitEngineEditor
                 AssetBundleBuild tbuild = new AssetBundleBuild();
                 tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
                 string tRelativePath = tfile.FullName;
-                tRelativePath = tRelativePath.Replace(tapppath, "");
+                int tindex = tRelativePath.IndexOf("Assets");
+                tRelativePath = tRelativePath.Substring(tindex, tRelativePath.Length - tindex);
                 tRelativePath = tRelativePath.Replace("\\", "/");
                 tbuild.assetNames = new string[] { tRelativePath };
                 builds.Add(tbuild);

@@ -13,7 +13,6 @@ namespace LitEngineEditor
         static public string sCSFilePath = "";
 
         //encrypt
-        static public string sEncryptKey = LitEngine.IO.AesStreamBase.AESKey;
         static public string sEncryptPath = "";
         #endregion
         static private void Rest()
@@ -22,7 +21,6 @@ namespace LitEngineEditor
             sSelectedPlatm = 0;
             sProtoFilePath = "";
             sCSFilePath = "";
-            sEncryptKey = LitEngine.IO.AesStreamBase.AESKey;
             sEncryptPath = "";
         }
         static public void LoadCFG()
@@ -37,8 +35,6 @@ namespace LitEngineEditor
                 SetField(spstrs[0].Trim(), spstrs[1].Trim());
             }
 
-            if (string.IsNullOrEmpty(sEncryptKey) || sEncryptKey.Length != 32)
-                sEncryptKey = LitEngine.IO.AesStreamBase.AESKey;
         }
 
         static private void SetPath(ref string _source,string _value)
