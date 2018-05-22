@@ -14,6 +14,8 @@ namespace LitEngineEditor
 
         //encrypt
         static public string sEncryptPath = "";
+        //meshtool
+        static public string sMeshExportPath = "";
         #endregion
         static private void Rest()
         {
@@ -64,6 +66,9 @@ namespace LitEngineEditor
                 case "sEncryptPath":
                     SetPath(ref sEncryptPath, _value);
                     break;
+                case "sMeshExportPath":
+                    SetPath(ref sMeshExportPath, _value);
+                    break;
             }
         }
 
@@ -76,7 +81,7 @@ namespace LitEngineEditor
             tbuilder.AppendLine("sProtoFilePath = " + sProtoFilePath);
             tbuilder.AppendLine("sCSFilePath = " + sCSFilePath);
             tbuilder.AppendLine("sEncryptPath = " + sEncryptPath);
-
+            tbuilder.AppendLine("sMeshExportPath = " + sMeshExportPath);
             File.WriteAllText(tfullpath, tbuilder.ToString());
 
         }

@@ -10,6 +10,7 @@ namespace LitEngineEditor
         AssetsWindow = 0,
         PrptoWindow,
         EncryptToolWindow,
+        MeshToolWindow,
     }
     public abstract class ExportBase
     {

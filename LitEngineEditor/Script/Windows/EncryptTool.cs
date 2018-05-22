@@ -27,7 +27,7 @@ namespace LitEngineEditor
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
                 string toldstr = ExportSetting.sEncryptPath;
-                toldstr = EditorUtility.OpenFolderPanel("Proto file Path", toldstr, "");
+                toldstr = EditorUtility.OpenFolderPanel("file Path", toldstr, "");
                 if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.sEncryptPath))
                 {
                     ExportSetting.sEncryptPath = toldstr;

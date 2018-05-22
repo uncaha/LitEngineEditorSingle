@@ -21,7 +21,7 @@ namespace LitEngineEditor
         #region field
         public bool NeedSaveSetting { get; set; }
         private int mToolbarOption = 0;
-        private string[] mToolbarTexts = { "Assets", "ProtoToCS", "EnCryptTool" ,"ScriptTool"};
+        private string[] mToolbarTexts = { "Assets", "ProtoToCS", "EnCryptTool" ,"MeshTool"};
         private Dictionary<ExportWType, ExportBase> mMap = new Dictionary<ExportWType, ExportBase>();
         #endregion
 
@@ -42,6 +42,9 @@ namespace LitEngineEditor
 
             EncryptTool tencrypt = new EncryptTool(this);
             mMap.Add(tencrypt.ExWType, tencrypt);
+
+            MeshTool tmeshtool = new MeshTool(this);
+            mMap.Add(tmeshtool.ExWType, tmeshtool);
         }
 
         void UpdateGUI()
