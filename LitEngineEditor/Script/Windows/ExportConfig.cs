@@ -31,6 +31,7 @@ namespace LitEngineEditor
         public void LoadConfig()
         {
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + cFileName;
+            if (!File.Exists(tfullpath)) return;
             tfullpath = tfullpath.Replace("\\", "/");
             LitEngine.XmlLoad.SecurityParser txmlfile = new LitEngine.XmlLoad.SecurityParser();
             txmlfile.LoadXml(System.IO.File.ReadAllText(tfullpath));
