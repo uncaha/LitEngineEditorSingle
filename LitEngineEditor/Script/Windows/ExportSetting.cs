@@ -8,6 +8,8 @@ namespace LitEngineEditor
         private const string sSavedCfg = "ExCfg.txt";
         static public int sCompressed = 1;
         static public int sSelectedPlatm = 0;
+
+        static public string sMoveAssetsFilePath = "";
         //proto path
         static public string sProtoFilePath = "";
         static public string sCSFilePath = "";
@@ -69,6 +71,9 @@ namespace LitEngineEditor
                 case "sMeshExportPath":
                     SetPath(ref sMeshExportPath, _value);
                     break;
+                case "sMoveAssetsFilePath":
+                    SetPath(ref sMoveAssetsFilePath, _value);
+                    break;
             }
         }
 
@@ -76,6 +81,7 @@ namespace LitEngineEditor
         {
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
             StringBuilder tbuilder = new StringBuilder();
+            tbuilder.AppendLine("sMoveAssetsFilePath = " + sMoveAssetsFilePath);
             tbuilder.AppendLine("sSelectedPlatm = " + sSelectedPlatm);
             tbuilder.AppendLine("sCompressed = " + sCompressed);
             tbuilder.AppendLine("sProtoFilePath = " + sProtoFilePath);

@@ -31,6 +31,11 @@ namespace LitEngineEditor
 
             Config.OnGUI();
 
+            if (GUILayout.Button("Delete *.meta"))
+            {
+                DeleteMetaFile();
+            }
+
             if (GUILayout.Button("Export Assets"))
             {
                 ExportAllBundle(sBuildTarget[ExportSetting.sSelectedPlatm]);
@@ -47,10 +52,30 @@ namespace LitEngineEditor
             }
             EditorGUILayout.EndHorizontal();
 
-
+            if (GUILayout.Button("Move tO"))
+            {
+                string toldpath = ExportSetting.sMoveAssetsFilePath;
+                toldpath = EditorUtility.OpenFolderPanel("Move to path", toldpath, "");
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sMoveAssetsFilePath))
+                {
+                    ExportSetting.sMoveAssetsFilePath = toldpath;
+                    NeedSaveSetting();
+                }
+                if (string.IsNullOrEmpty(ExportSetting.sMoveAssetsFilePath)) return;
+                Config.LoadConfig();
+                BuildTarget _target = sBuildTarget[ExportSetting.sSelectedPlatm];
+                string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+                MoveToPath(tpath, ExportSetting.sMoveAssetsFilePath, ExportConfig.GetTartFolder(_target));
+            }
         }
 
         #region export
+        public static void DeleteMetaFile()
+        {
+            DeleteAllFile(Config.sResourcesPath, "*.meta");
+            AssetDatabase.Refresh();
+        }
+
         public static void ExportAllBundle(BuildTarget _target)
         {
             string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
@@ -72,7 +97,7 @@ namespace LitEngineEditor
                 tbuild.assetNames = new string[] { tRelativePath };
                 builds.Add(tbuild);
             }
-
+            
             GoExport(tpath, builds.ToArray(), _target);
         }
 
@@ -81,7 +106,7 @@ namespace LitEngineEditor
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
             if (_builds.Length == 0) return;
-            BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.sCompressed], _target);
+            BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
             string tmanifestname = ExportConfig.GetTartFolder(_target).Replace("/", "");
             string tdespathname = _path + "/" + LoaderManager.ManifestName + LitEngine.Loader.BaseBundle.sSuffixName;
@@ -118,6 +143,7 @@ namespace LitEngineEditor
         {
             if (!Directory.Exists(_desPath))
                 Directory.CreateDirectory(_desPath);
+            DeleteAllFile(_desPath);
 
             DirectoryInfo tdirfolder = new DirectoryInfo(_socPath);
 
@@ -131,15 +157,22 @@ namespace LitEngineEditor
             Debug.Log("移动完成.");
         }
 
-        static void DeleteAllFile(string _path)
+        static void DeleteAllFile(string _path,string searchPatter = "*.*")
         {
-            if (!Directory.Exists(_path))
-                Directory.CreateDirectory(_path);
-            DirectoryInfo tdirfolder = new DirectoryInfo(_path);
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
-            foreach (FileInfo tfile in tfileinfos)
-                File.Delete(tfile.FullName);
-            Debug.Log("清除目录结束.");
+            if (!Directory.Exists(_path)) return;
+
+            string[] tfiles =  Directory.GetFiles(_path, searchPatter, System.IO.SearchOption.AllDirectories);
+            for (int i = 0; i < tfiles.Length; i++)
+            {
+                string tfilename = tfiles[i];
+                if (File.Exists(tfilename))
+                {
+                    FileInfo fi = new FileInfo(tfilename);
+                    fi.Attributes = FileAttributes.Normal;
+                    fi.Delete();
+                }
+            }
+            Debug.Log("清除结束.");
         }
         #endregion
 
