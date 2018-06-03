@@ -85,9 +85,20 @@ namespace LitEngineEditor
             DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
+            bool tisCanExport = false;
+            Dictionary<string, string> tfiledic = new Dictionary<string, string>();
             foreach (FileInfo tfile in tfileinfos)
             {
                 if (tfile.Name.EndsWith(".meta")) continue;
+                if(tfiledic.ContainsKey(tfile.Name))
+                {
+                    DLog.LogErrorFormat("重名的文件.name1 = {0} \n name2 = {1}", tfiledic[tfile.Name],tfile.FullName);
+                    tisCanExport = true;
+                    continue;
+                }
+
+                tfiledic.Add(tfile.Name, tfile.FullName);
+
                 AssetBundleBuild tbuild = new AssetBundleBuild();
                 tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
                 string tRelativePath = tfile.FullName;
@@ -97,8 +108,10 @@ namespace LitEngineEditor
                 tbuild.assetNames = new string[] { tRelativePath };
                 builds.Add(tbuild);
             }
-            
-            GoExport(tpath, builds.ToArray(), _target);
+            if (!tisCanExport)
+                GoExport(tpath, builds.ToArray(), _target);
+            else
+                DLog.LogError("导出失败.");
         }
 
         public static void GoExport(string _path, AssetBundleBuild[] _builds, BuildTarget _target)
