@@ -6,6 +6,7 @@ using LitEngine.ScriptInterface;
 using LitEngine;
 namespace LitEngineEditor
 {
+
     public class ExportObject : ExportBase
     {
         public static readonly string[] sPlatformList = new string[] { "Android", "iOS", "Windows64" };
@@ -86,18 +87,30 @@ namespace LitEngineEditor
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
             bool tisCanExport = false;
+          //  Dictionary<string, ExObject> tfiledic = new Dictionary<string, ExObject>();
+            Dictionary<string, List<string>> tHavedfiledic = new Dictionary<string, List<string>>();
             Dictionary<string, string> tfiledic = new Dictionary<string, string>();
             foreach (FileInfo tfile in tfileinfos)
             {
                 if (tfile.Name.EndsWith(".meta")) continue;
                 if(tfiledic.ContainsKey(tfile.Name))
                 {
-                    DLog.LogErrorFormat("重名的文件.name1 = {0} \n name2 = {1}", tfiledic[tfile.Name],tfile.FullName);
+                    if (!tHavedfiledic.ContainsKey(tfile.Name))
+                        tHavedfiledic.Add(tfile.Name, new List<string>());
+
+                    if (!tHavedfiledic[tfile.Name].Contains(tfiledic[tfile.Name]))
+                        tHavedfiledic[tfile.Name].Add(tfiledic[tfile.Name]);
+
+                    if (!tHavedfiledic[tfile.Name].Contains(tfile.FullName))
+                        tHavedfiledic[tfile.Name].Add(tfile.FullName);
+
                     tisCanExport = true;
                     continue;
                 }
-
-                tfiledic.Add(tfile.Name, tfile.FullName);
+                else
+                {
+                    tfiledic.Add(tfile.Name, tfile.FullName);
+                }
 
                 AssetBundleBuild tbuild = new AssetBundleBuild();
                 tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
@@ -109,9 +122,31 @@ namespace LitEngineEditor
                 builds.Add(tbuild);
             }
             if (!tisCanExport)
+            {
                 GoExport(tpath, builds.ToArray(), _target);
+            }  
             else
-                DLog.LogError("导出失败.");
+            {
+                DLog.LogError("存在重名文件.导出失败.");
+                
+                List<string> tkeys = new List<string>(tHavedfiledic.Keys);
+                foreach (var key in tkeys)
+                {
+                    System.Text.StringBuilder tstrbuilder = new System.Text.StringBuilder();
+                    tstrbuilder.AppendLine("重名文件:"+ key);
+                    tstrbuilder.AppendLine("{");
+                    List<string> tfiles = tHavedfiledic[key];
+                    foreach (var item in tfiles)
+                    {
+                        tstrbuilder.AppendLine("    "+ item);
+                    }
+
+                    tstrbuilder.AppendLine("}");
+                    DLog.LogError(tstrbuilder.ToString());
+                }
+                
+            }
+                
         }
 
         public static void GoExport(string _path, AssetBundleBuild[] _builds, BuildTarget _target)
