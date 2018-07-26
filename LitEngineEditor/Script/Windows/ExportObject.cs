@@ -37,6 +37,10 @@ namespace LitEngineEditor
                 DeleteMetaFile();
             }
 
+            if (GUILayout.Button("Check OutSide Dependencies "))
+            {
+                CheckOutSideDependencies();
+            }
             if (GUILayout.Button("Export Assets"))
             {
                 ExportAllBundle(sBuildTarget[ExportSetting.sSelectedPlatm]);
@@ -77,6 +81,39 @@ namespace LitEngineEditor
             AssetDatabase.Refresh();
         }
 
+        protected static void CheckOutSideDependencies()
+        {
+            DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+            foreach (FileInfo tfile in tfileinfos)
+            {
+                string tRelativePath = tfile.FullName;
+                int tindex = tRelativePath.IndexOf("Assets");
+                tRelativePath = tRelativePath.Substring(tindex, tRelativePath.Length - tindex);
+                tRelativePath = tRelativePath.Replace("\\", "/");
+
+                string[] tresdepends = AssetDatabase.GetDependencies(tRelativePath, true);
+                bool ishave = false;
+                System.Text.StringBuilder tsbd = new System.Text.StringBuilder();
+                tsbd.AppendLine(tRelativePath);
+                tsbd.AppendLine("{");
+                foreach (string titem in tresdepends)
+                {
+                    if (!titem.EndsWith(".cs") && !titem.EndsWith(".dll") &&  !titem.StartsWith(Config.sResourcesPath))
+                    {
+                        tsbd.AppendLine(titem);
+                        ishave = true;
+                    }
+                }
+                tsbd.AppendLine("}");
+                if(ishave)
+                {
+                    DLog.Log(tsbd.ToString());
+                }
+            }
+        }
+
         public static void ExportAllBundle(BuildTarget _target)
         {
             string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
@@ -111,7 +148,7 @@ namespace LitEngineEditor
                 {
                     tfiledic.Add(tfile.Name, tfile.FullName);
                 }
-
+                
                 AssetBundleBuild tbuild = new AssetBundleBuild();
                 tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
                 string tRelativePath = tfile.FullName;
