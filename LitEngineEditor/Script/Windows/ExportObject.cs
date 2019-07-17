@@ -14,7 +14,7 @@ namespace LitEngineEditor
 
         public static string[] sCompressed = new string[2] { "Compressed", "UnCompressed" };
         private static readonly BuildAssetBundleOptions[] sBuildOption= { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions .UncompressedAssetBundle};
-        public ExportObject(ExportWindow _window) : base(_window)
+        public ExportObject():base()
         {
             ExWType = ExportWType.AssetsWindow;
         }
@@ -22,12 +22,12 @@ namespace LitEngineEditor
         override public void OnGUI()
         {
             GUILayout.Label("Platform", EditorStyles.boldLabel);
-            int oldSelectedPlatm = ExportSetting.sSelectedPlatm;
-            int oldcompressed = ExportSetting.sCompressed;
-            ExportSetting.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.sSelectedPlatm, sPlatformList, 3);
-            ExportSetting.sCompressed = GUILayout.SelectionGrid(ExportSetting.sCompressed, sCompressed, 2);
+            int oldSelectedPlatm = ExportSetting.Instance.sSelectedPlatm;
+            int oldcompressed = ExportSetting.Instance.sCompressed;
+            ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
+            ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
 
-            if(oldSelectedPlatm != ExportSetting.sSelectedPlatm || oldcompressed != ExportSetting.sCompressed)
+            if(oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
                 NeedSaveSetting();
 
             Config.OnGUI();
@@ -43,34 +43,34 @@ namespace LitEngineEditor
             }
             if (GUILayout.Button("Export Assets"))
             {
-                ExportAllBundle(sBuildTarget[ExportSetting.sSelectedPlatm]);
+                ExportAllBundle(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
             }
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Move Assets to SidePath"))
             {
-                MoveBundleToSideDate(sBuildTarget[ExportSetting.sSelectedPlatm]);
+                MoveBundleToSideDate(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
             }
             if (GUILayout.Button("Move Assets to StreamPath"))
             {
-                MoveBUndleToStreamingPath(sBuildTarget[ExportSetting.sSelectedPlatm]);
+                MoveBUndleToStreamingPath(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
             }
             EditorGUILayout.EndHorizontal();
 
             if (GUILayout.Button("Move tO"))
             {
-                string toldpath = ExportSetting.sMoveAssetsFilePath;
+                string toldpath = ExportSetting.Instance.sMoveAssetsFilePath;
                 toldpath = EditorUtility.OpenFolderPanel("Move to path", toldpath, "");
-                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sMoveAssetsFilePath))
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.Instance.sMoveAssetsFilePath))
                 {
-                    ExportSetting.sMoveAssetsFilePath = toldpath;
+                    ExportSetting.Instance.sMoveAssetsFilePath = toldpath;
                     NeedSaveSetting();
                 }
-                if (string.IsNullOrEmpty(ExportSetting.sMoveAssetsFilePath)) return;
+                if (string.IsNullOrEmpty(ExportSetting.Instance.sMoveAssetsFilePath)) return;
                 Config.LoadConfig();
-                BuildTarget _target = sBuildTarget[ExportSetting.sSelectedPlatm];
+                BuildTarget _target = sBuildTarget[ExportSetting.Instance.sSelectedPlatm];
                 string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
-                MoveToPath(tpath, ExportSetting.sMoveAssetsFilePath, ExportConfig.GetTartFolder(_target));
+                MoveToPath(tpath, ExportSetting.Instance.sMoveAssetsFilePath, ExportConfig.GetTartFolder(_target));
             }
         }
 
@@ -191,7 +191,7 @@ namespace LitEngineEditor
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
             if (_builds.Length == 0) return;
-            BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
+            BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
             string tmanifestname = ExportConfig.GetTartFolder(_target).Replace("/", "");
             string tdespathname = _path + "/" + LoaderManager.ManifestName + LitEngine.Loader.BaseBundle.sSuffixName;

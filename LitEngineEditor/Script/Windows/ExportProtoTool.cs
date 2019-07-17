@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Text;
-using ProtoBuf.Reflection;
-using Google.Protobuf.Reflection;
+//using ProtoBuf.Reflection;
+//using Google.Protobuf.Reflection;
 using System.IO;
 namespace LitEngineEditor
 {
@@ -10,7 +10,7 @@ namespace LitEngineEditor
     {
         private Vector2 mScrollPosition = Vector2.zero;
         private StringBuilder mContext = new StringBuilder();
-        public ExportProtoTool(ExportWindow _window):base(_window)
+        public ExportProtoTool():base()
         {
             ExWType = ExportWType.PrptoWindow;
         }
@@ -20,14 +20,14 @@ namespace LitEngineEditor
             mScrollPosition = PublicGUI.DrawScrollview("Console",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 130);
             GUILayout.Label("ProtoFilePath", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("", ExportSetting.sProtoFilePath, EditorStyles.textField);
+            EditorGUILayout.TextField("", ExportSetting.Instance.sProtoFilePath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
-                string toldpath = ExportSetting.sProtoFilePath;
+                string toldpath = ExportSetting.Instance.sProtoFilePath;
                 toldpath = EditorUtility.OpenFolderPanel("Proto file Path", toldpath, "");
-                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sProtoFilePath))
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.Instance.sProtoFilePath))
                 {
-                    ExportSetting.sProtoFilePath = toldpath;
+                    ExportSetting.Instance.sProtoFilePath = toldpath;
                     NeedSaveSetting();
                 }
                     
@@ -36,14 +36,14 @@ namespace LitEngineEditor
 
             GUILayout.Label("ExportPath", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("", ExportSetting.sCSFilePath, EditorStyles.textField);
+            EditorGUILayout.TextField("", ExportSetting.Instance.sCSFilePath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
-                string toldpath = ExportSetting.sCSFilePath;
+                string toldpath = ExportSetting.Instance.sCSFilePath;
                 toldpath = EditorUtility.OpenFolderPanel("CS file Path", toldpath, "");
-                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.sCSFilePath))
+                if (!string.IsNullOrEmpty(toldpath) && !toldpath.Equals(ExportSetting.Instance.sCSFilePath))
                 {
-                    ExportSetting.sCSFilePath = toldpath;
+                    ExportSetting.Instance.sCSFilePath = toldpath;
                     NeedSaveSetting();
                 }
                    
@@ -79,46 +79,46 @@ namespace LitEngineEditor
 
         private void ExportCSFile()
         {
-            AddContext("Start Export:");
+            //AddContext("Start Export:");
 
-            int exitCode = 0;
-            CodeGenerator codegen = CSharpCodeGenerator.Default;
-            var set = new FileDescriptorSet();
-            set.AddImportPath(ExportSetting.sProtoFilePath);
-            string[] tpaths = Directory.GetDirectories(ExportSetting.sProtoFilePath);
-            foreach (string tp in tpaths)
-            {
-                set.AddImportPath(tp);
-            }
+            //int exitCode = 0;
+            //CodeGenerator codegen = CSharpCodeGenerator.Default;
+            //var set = new FileDescriptorSet();
+            //set.AddImportPath(ExportSetting.Instance.sProtoFilePath);
+            //string[] tpaths = Directory.GetDirectories(ExportSetting.Instance.sProtoFilePath);
+            //foreach (string tp in tpaths)
+            //{
+            //    set.AddImportPath(tp);
+            //}
 
-            DirectoryInfo tdirfolder = new DirectoryInfo(ExportSetting.sProtoFilePath);
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.proto", System.IO.SearchOption.AllDirectories);
-            foreach (var input in tfileinfos)
-            {
-                if (!set.Add(input.Name, true))
-                {
-                    AddContext($"File not found: {input}");
-                    exitCode = 1;
-                }
-            }
-            set.Process();
-            var errors = set.GetErrors();
-            foreach (var err in errors)
-            {
-                if (err.IsError) exitCode++;
-                AddContext(err.ToString());
-            }
-            if (exitCode != 0) return;
+            //DirectoryInfo tdirfolder = new DirectoryInfo(ExportSetting.Instance.sProtoFilePath);
+            //FileInfo[] tfileinfos = tdirfolder.GetFiles("*.proto", System.IO.SearchOption.AllDirectories);
+            //foreach (var input in tfileinfos)
+            //{
+            //    if (!set.Add(input.Name, true))
+            //    {
+            //        AddContext($"File not found: {input}");
+            //        exitCode = 1;
+            //    }
+            //}
+            //set.Process();
+            //var errors = set.GetErrors();
+            //foreach (var err in errors)
+            //{
+            //    if (err.IsError) exitCode++;
+            //    AddContext(err.ToString());
+            //}
+            //if (exitCode != 0) return;
 
-            var files = codegen.Generate(set);
-            foreach (var file in files)
-            {
-                var path = Path.Combine(ExportSetting.sCSFilePath, file.Name);
-                File.WriteAllText(path, file.Text);
-            }
+            //var files = codegen.Generate(set);
+            //foreach (var file in files)
+            //{
+            //    var path = Path.Combine(ExportSetting.Instance.sCSFilePath, file.Name);
+            //    File.WriteAllText(path, file.Text);
+            //}
 
-            AddContext("Export End.");
-            AddSpace();
+            //AddContext("Export End.");
+            //AddSpace();
         }
     }
 }

@@ -8,13 +8,15 @@ namespace LitEngineEditor
     public enum ExportWType
     {
         AssetsWindow = 0,
+        ExcelWindow,
         PrptoWindow,
         EncryptToolWindow,
         MeshToolWindow,
+        
     }
     public abstract class ExportBase
     {
-        protected ExportWindow mWindow;
+        public ExportWindow mWindow;
         private static ExportConfig sConfig = null;
         public static ExportConfig Config
         {
@@ -34,14 +36,9 @@ namespace LitEngineEditor
         {
             Config.LoadConfig();
         }
-        private ExportBase()
+        public ExportBase()
         {
             
-        }
-
-        public ExportBase(ExportWindow _windows)
-        {
-            mWindow = _windows;
         }
 
         public void NeedSaveSetting()

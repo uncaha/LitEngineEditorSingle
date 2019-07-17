@@ -48,10 +48,10 @@ namespace LitEngineEditor
         {
             GUILayout.Label("Config:", EditorStyles.boldLabel);
             StringBuilder tbuilder = new StringBuilder();
-            tbuilder.AppendLine(string.Format("[Platm]:{0}", ExportObject.sPlatformList[ExportSetting.sSelectedPlatm]));
-            tbuilder.AppendLine(string.Format("[Compressed]:{0}", ExportSetting.sCompressed == 0 ? true : false));
+            tbuilder.AppendLine(string.Format("[Platm]:{0}", ExportObject.sPlatformList[ExportSetting.Instance.sSelectedPlatm]));
+            tbuilder.AppendLine(string.Format("[Compressed]:{0}", ExportSetting.Instance.sCompressed == 0 ? true : false));
             tbuilder.AppendLine(string.Format("[ResourcesPath]:{0}", sResourcesPath));
-            tbuilder.AppendLine(string.Format("[ExportPath]:{0}/{1}", sDefaultFolder, GetTartFolder(ExportObject.sBuildTarget[ExportSetting.sSelectedPlatm])).Replace("//", "/"));
+            tbuilder.AppendLine(string.Format("[ExportPath]:{0}/{1}", sDefaultFolder, GetTartFolder(ExportObject.sBuildTarget[ExportSetting.Instance.sSelectedPlatm])).Replace("//", "/"));
             tbuilder.AppendLine(string.Format("[SidePath]:{0}/{1}", sEditorBundleFolder, sResDataPath).Replace("//", "/"));
             tbuilder.AppendLine(string.Format("[StreamingPath]:{0}/{1}", sStreamingBundleFolder,sResDataPath).Replace("//","/"));
 

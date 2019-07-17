@@ -5,90 +5,64 @@ namespace LitEngineEditor
     public class ExportSetting
     {
         #region saved
-        private const string sSavedCfg = "ExCfg.txt";
-        static public int sCompressed = 1;
-        static public int sSelectedPlatm = 0;
+        private const string sSavedCfg = "ExCfg.json";
+        static private ExportSetting sIntance = null;
+        static public ExportSetting Instance
+        {
+            get
+            {
+                if (sIntance == null)
+                {
+                    string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
+                    if (!File.Exists(tfullpath))
+                    {
+                        sIntance = new ExportSetting();
+                    }
+                    else
+                    {
+                        sIntance = UnityEngine.JsonUtility.FromJson<ExportSetting>(File.ReadAllText(tfullpath));
+                    }
 
-        static public string sMoveAssetsFilePath = "";
+                }
+                    
+                return sIntance;
+            }
+        }
+
+        public int sCompressed = 1;
+        public int sSelectedPlatm = 0;
+
+        public string sMoveAssetsFilePath = "";
         //proto path
-        static public string sProtoFilePath = "";
-        static public string sCSFilePath = "";
+        public string sProtoFilePath = "";
+        public string sCSFilePath = "";
 
         //encrypt
-        static public string sEncryptPath = "";
+        public string sEncryptPath = "";
         //meshtool
-        static public string sMeshExportPath = "";
+        public string sMeshExportPath = "";
+
+        //excel
+        public string sExcelPath = "";
+        public string sExcelBytesPath = "";
+        public string sExcelSharpPath = "";
         #endregion
         static private void Rest()
         {
-            sCompressed = 1;
-            sSelectedPlatm = 0;
-            sProtoFilePath = "";
-            sCSFilePath = "";
-            sEncryptPath = "";
+            sIntance = null;
         }
-        static public void LoadCFG()
+
+        private ExportSetting()
         {
-            Rest();
-            string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
-            if (!File.Exists(tfullpath)) return;
-            string[] tlines = File.ReadAllLines(tfullpath);
-            foreach (string curline in tlines)
-            {
-                string[] spstrs = curline.Split('=');
-                SetField(spstrs[0].Trim(), spstrs[1].Trim());
-            }
-
+            
         }
-
-        static private void SetPath(ref string _source,string _value)
-        {
-            if (Directory.Exists(_value))
-                _source = _value;
-            else
-                _source = "";
-        }
-
-        static private void SetField(string _key, string _value)
-        {
-            switch (_key)
-            {
-                case "sSelectedPlatm":
-                    sSelectedPlatm = int.Parse(_value);
-                    break;
-                case "sCompressed":
-                    sCompressed = int.Parse(_value);
-                    break;
-                case "sProtoFilePath":
-                    SetPath(ref sProtoFilePath,_value);
-                    break;
-                case "sCSFilePath":
-                    SetPath(ref sCSFilePath, _value);
-                    break;
-                case "sEncryptPath":
-                    SetPath(ref sEncryptPath, _value);
-                    break;
-                case "sMeshExportPath":
-                    SetPath(ref sMeshExportPath, _value);
-                    break;
-                case "sMoveAssetsFilePath":
-                    SetPath(ref sMoveAssetsFilePath, _value);
-                    break;
-            }
-        }
-
+     
         static public void SaveCFG()
         {
+            if (sIntance == null) return;
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
-            StringBuilder tbuilder = new StringBuilder();
-            tbuilder.AppendLine("sMoveAssetsFilePath = " + sMoveAssetsFilePath);
-            tbuilder.AppendLine("sSelectedPlatm = " + sSelectedPlatm);
-            tbuilder.AppendLine("sCompressed = " + sCompressed);
-            tbuilder.AppendLine("sProtoFilePath = " + sProtoFilePath);
-            tbuilder.AppendLine("sCSFilePath = " + sCSFilePath);
-            tbuilder.AppendLine("sEncryptPath = " + sEncryptPath);
-            tbuilder.AppendLine("sMeshExportPath = " + sMeshExportPath);
-            File.WriteAllText(tfullpath, tbuilder.ToString());
+            string tjson = UnityEngine.JsonUtility.ToJson(sIntance);
+            File.WriteAllText(tfullpath, tjson);
 
         }
     }

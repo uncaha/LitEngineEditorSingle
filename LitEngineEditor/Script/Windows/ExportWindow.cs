@@ -11,7 +11,7 @@ namespace LitEngineEditor
         static void Init()
         {
             ExportWindow window = (ExportWindow)EditorWindow.GetWindow(typeof(ExportWindow));
-            window.minSize = new Vector2(400, 330);
+            window.minSize = new Vector2(430, 330);
             window.maxSize = new Vector2(500, 330);
             window.name = "ExportTool";
             window.Show();
@@ -21,7 +21,7 @@ namespace LitEngineEditor
         #region field
         public bool NeedSaveSetting { get; set; }
         private int mToolbarOption = 0;
-        private string[] mToolbarTexts = { "Assets", "ProtoToCS", "EnCryptTool" ,"MeshTool"};
+        private string[] mToolbarTexts = { "Assets","Excel", "ProtoToCS", "EnCryptTool" ,"MeshTool"};
         private Dictionary<ExportWType, ExportBase> mMap = new Dictionary<ExportWType, ExportBase>();
         #endregion
 
@@ -32,19 +32,19 @@ namespace LitEngineEditor
 
         void InitGUI()
         {
-            ExportSetting.LoadCFG();
             ExportBase.RestConfig();
-            ExportObject tassetobj = new ExportObject(this);
-            mMap.Add(tassetobj.ExWType, tassetobj);
+            AddWindow<ExportObject>();
+            AddWindow<ExportExcelWiindow>();
+            AddWindow<ExportProtoTool>();
+            AddWindow<EncryptTool>();
+            AddWindow<MeshTool>();
+        }
 
-            ExportProtoTool tprototool = new ExportProtoTool(this);
-            mMap.Add(tprototool.ExWType, tprototool);
-
-            EncryptTool tencrypt = new EncryptTool(this);
-            mMap.Add(tencrypt.ExWType, tencrypt);
-
-            MeshTool tmeshtool = new MeshTool(this);
-            mMap.Add(tmeshtool.ExWType, tmeshtool);
+        protected void AddWindow<T>()where T : ExportBase,new()
+        {
+            T twd = new T();
+            twd.mWindow = this;
+            mMap.Add(twd.ExWType, twd);
         }
 
         void UpdateGUI()

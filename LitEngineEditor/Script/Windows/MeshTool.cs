@@ -10,7 +10,7 @@ namespace LitEngineEditor
         private Vector2 mScrollPosition = Vector2.zero;
         private StringBuilder mContext = new StringBuilder();
         private Object SelectedObject = null;
-        public MeshTool(ExportWindow _window) : base(_window)
+        public MeshTool() : base()
         {
             ExWType = ExportWType.MeshToolWindow;
         }
@@ -29,14 +29,14 @@ namespace LitEngineEditor
 
             GUILayout.Label("ExportPath", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("", ExportSetting.sMeshExportPath, EditorStyles.textField);
+            EditorGUILayout.TextField("", ExportSetting.Instance.sMeshExportPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
-                string toldstr = ExportSetting.sMeshExportPath;
+                string toldstr = ExportSetting.Instance.sMeshExportPath;
                 toldstr = EditorUtility.OpenFolderPanel("file Path", toldstr, "");
-                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.sMeshExportPath))
+                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.Instance.sMeshExportPath))
                 {
-                    ExportSetting.sMeshExportPath = toldstr;
+                    ExportSetting.Instance.sMeshExportPath = toldstr;
                     NeedSaveSetting();
                 }
 
@@ -45,14 +45,14 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Combine"))
             {
-                string tfilepath = EditorUtility.SaveFilePanelInProject("Save CombineMesh", "NewCombineMesh", "asset", "Save a new file.", ExportSetting.sMeshExportPath);
+                string tfilepath = EditorUtility.SaveFilePanelInProject("Save CombineMesh", "NewCombineMesh", "asset", "Save a new file.", ExportSetting.Instance.sMeshExportPath);
                 if (!string.IsNullOrEmpty(tfilepath))
                     Combine(tfilepath);
             }
 
             if (GUILayout.Button("Combine And Export Obj"))
             {
-                string tfilepath = EditorUtility.SaveFilePanelInProject("Save Obj", "NewObjMesh", "obj", "Save a new file.", ExportSetting.sMeshExportPath);
+                string tfilepath = EditorUtility.SaveFilePanelInProject("Save Obj", "NewObjMesh", "obj", "Save a new file.", ExportSetting.Instance.sMeshExportPath);
                 if (!string.IsNullOrEmpty(tfilepath))
                     CombineAndExportToObj(tfilepath);
             }
