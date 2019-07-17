@@ -44,14 +44,12 @@ namespace LitEngineEditor
             EditorGUILayout.TextField("", ExportSetting.Instance.sExcelPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
-                string toldstr = ExportSetting.Instance.sExcelPath;
+                string toldstr = ExportSetting.Instance.sExcelBytesPath;
                 toldstr = EditorUtility.OpenFolderPanel("file Path", toldstr, "");
-                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.Instance.sExcelPath))
+                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.Instance.sExcelBytesPath))
                 {
-                    ExportSetting.Instance.sExcelPath = toldstr;
+                    ExportSetting.Instance.sExcelBytesPath = toldstr;
                     NeedSaveSetting();
-
-                    RestFileList();
                 }
 
             }
@@ -59,17 +57,15 @@ namespace LitEngineEditor
 
             //导出c#目录
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("", ExportSetting.Instance.sExcelPath, EditorStyles.textField);
+            EditorGUILayout.TextField("", ExportSetting.Instance.sExcelSharpPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
-                string toldstr = ExportSetting.Instance.sExcelPath;
+                string toldstr = ExportSetting.Instance.sExcelSharpPath;
                 toldstr = EditorUtility.OpenFolderPanel("file Path", toldstr, "");
-                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.Instance.sExcelPath))
+                if (!string.IsNullOrEmpty(toldstr) && !toldstr.Equals(ExportSetting.Instance.sExcelSharpPath))
                 {
-                    ExportSetting.Instance.sExcelPath = toldstr;
+                    ExportSetting.Instance.sExcelSharpPath = toldstr;
                     NeedSaveSetting();
-
-                    RestFileList();
                 }
 
             }
@@ -77,12 +73,13 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Export Bytes"))
             {
+                if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
                 if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
                 {
                     string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, "*.*", SearchOption.AllDirectories);
                     foreach (string filename in files)
                     {
-                     
+
                     }
                     DLog.LogFormat("Complete  Export Data .count = {0}", files.Length);
                     UnityEditor.AssetDatabase.Refresh();
@@ -91,6 +88,7 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Export C#"))
             {
+                if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelSharpPath)) return;
                 if (EditorUtility.DisplayDialog("Export C#", " Start Export C#?", "ok", "cancel"))
                 {
                     string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, "*.*", SearchOption.AllDirectories);

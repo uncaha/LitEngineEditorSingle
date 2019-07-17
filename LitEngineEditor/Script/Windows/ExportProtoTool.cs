@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Text;
-//using ProtoBuf.Reflection;
-//using Google.Protobuf.Reflection;
+using ProtoBuf.Reflection;
+using Google.Protobuf.Reflection;
 using System.IO;
 namespace LitEngineEditor
 {
@@ -79,46 +79,46 @@ namespace LitEngineEditor
 
         private void ExportCSFile()
         {
-            //AddContext("Start Export:");
+            AddContext("Start Export:");
 
-            //int exitCode = 0;
-            //CodeGenerator codegen = CSharpCodeGenerator.Default;
-            //var set = new FileDescriptorSet();
-            //set.AddImportPath(ExportSetting.Instance.sProtoFilePath);
-            //string[] tpaths = Directory.GetDirectories(ExportSetting.Instance.sProtoFilePath);
-            //foreach (string tp in tpaths)
-            //{
-            //    set.AddImportPath(tp);
-            //}
+            int exitCode = 0;
+            CodeGenerator codegen = CSharpCodeGenerator.Default;
+            var set = new FileDescriptorSet();
+            set.AddImportPath(ExportSetting.Instance.sProtoFilePath);
+            string[] tpaths = Directory.GetDirectories(ExportSetting.Instance.sProtoFilePath);
+            foreach (string tp in tpaths)
+            {
+                set.AddImportPath(tp);
+            }
 
-            //DirectoryInfo tdirfolder = new DirectoryInfo(ExportSetting.Instance.sProtoFilePath);
-            //FileInfo[] tfileinfos = tdirfolder.GetFiles("*.proto", System.IO.SearchOption.AllDirectories);
-            //foreach (var input in tfileinfos)
-            //{
-            //    if (!set.Add(input.Name, true))
-            //    {
-            //        AddContext($"File not found: {input}");
-            //        exitCode = 1;
-            //    }
-            //}
-            //set.Process();
-            //var errors = set.GetErrors();
-            //foreach (var err in errors)
-            //{
-            //    if (err.IsError) exitCode++;
-            //    AddContext(err.ToString());
-            //}
-            //if (exitCode != 0) return;
+            DirectoryInfo tdirfolder = new DirectoryInfo(ExportSetting.Instance.sProtoFilePath);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.proto", System.IO.SearchOption.AllDirectories);
+            foreach (var input in tfileinfos)
+            {
+                if (!set.Add(input.Name, true))
+                {
+                    AddContext($"File not found: {input}");
+                    exitCode = 1;
+                }
+            }
+            set.Process();
+            var errors = set.GetErrors();
+            foreach (var err in errors)
+            {
+                if (err.IsError) exitCode++;
+                AddContext(err.ToString());
+            }
+            if (exitCode != 0) return;
 
-            //var files = codegen.Generate(set);
-            //foreach (var file in files)
-            //{
-            //    var path = Path.Combine(ExportSetting.Instance.sCSFilePath, file.Name);
-            //    File.WriteAllText(path, file.Text);
-            //}
+            var files = codegen.Generate(set);
+            foreach (var file in files)
+            {
+                var path = Path.Combine(ExportSetting.Instance.sCSFilePath, file.Name);
+                File.WriteAllText(path, file.Text);
+            }
 
-            //AddContext("Export End.");
-            //AddSpace();
+            AddContext("Export End.");
+            AddSpace();
         }
     }
 }
