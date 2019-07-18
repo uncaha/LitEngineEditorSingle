@@ -134,11 +134,14 @@ namespace LitEngine.Excel
                         System.Exception terro = WriteData(twt, tdata.objects[1, j], tdata.objects[i, j]);
                         if (terro != null)
                         {
-                            DLog.LogError($"表 {tname} 生成配置出现错误第{i}行,第{j}列.erro = {terro.ToString()}");
                             twt.Flush();
                             twt.Close();
                             tfile.Close();
                             File.Delete(ttempfullname);
+                            if (UnityEditor.EditorUtility.DisplayDialog("Error", $"表 {tname} 生成配置出现错误第{i}行,第{j}列.erro = {terro.ToString()}", "ok"))
+                            {
+                                DLog.LogError($"表 {tname} 生成配置出现错误第{i}行,第{j}列.erro = {terro.ToString()}");
+                            }
                             return;
                         }
                     }
@@ -288,7 +291,7 @@ namespace LitEngine.Excel
                 twt.WriteLine("using LitEngine;");
                 twt.WriteLine("using LitEngine.IO;");
                 twt.WriteLine("using System.Collections.Generic;");
-                twt.WriteLine("namespace ScriptProject.Config{").Indent();
+                twt.WriteLine("namespace Config{").Indent();
                 twt.WriteLine($"public class {tname} : ConfigBase{"{"}").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{tname}.bytes{'"'};");
                 twt.WriteLine("protected Dictionary<int, ConfigData> mMaps = new Dictionary<int, ConfigData>();");

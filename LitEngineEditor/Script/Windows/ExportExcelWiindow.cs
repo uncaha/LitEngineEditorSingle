@@ -5,6 +5,7 @@ using System.IO;
 using LitEngine.ScriptInterface;
 using LitEngine;
 using System.Text;
+using LitEngine.Excel;
 namespace LitEngineEditor
 {
     public class ExportExcelWiindow : ExportBase
@@ -15,15 +16,16 @@ namespace LitEngineEditor
         public ExportExcelWiindow() : base()
         {
             ExWType = ExportWType.ExcelWindow;
+            RestFileList();
         }
         override public void OnGUI()
         {
-            mScrollPosition = PublicGUI.DrawScrollview("Files", mContext.ToString(), mScrollPosition, mWindow.position.size.x, 150);
+            mScrollPosition = PublicGUI.DrawScrollview("Files", mContext.ToString(), mScrollPosition, mWindow.position.size.x, 160);
 
-            GUILayout.Label("ExcelPath", EditorStyles.boldLabel);
-
+            
             //excel目录
             EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("Ex:", GUILayout.Width(35));
             EditorGUILayout.TextField("", ExportSetting.Instance.sExcelPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
@@ -42,7 +44,8 @@ namespace LitEngineEditor
 
             //导出byte目录
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("", ExportSetting.Instance.sExcelPath, EditorStyles.textField);
+            GUILayout.Label("DB:", GUILayout.Width(35));
+            EditorGUILayout.TextField("", ExportSetting.Instance.sExcelBytesPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
                 string toldstr = ExportSetting.Instance.sExcelBytesPath;
@@ -58,6 +61,7 @@ namespace LitEngineEditor
 
             //导出c#目录
             EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("C#:", GUILayout.Width(35));
             EditorGUILayout.TextField("", ExportSetting.Instance.sExcelSharpPath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
@@ -77,10 +81,12 @@ namespace LitEngineEditor
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
                 if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
                 {
-                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, filestag, SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath, filestag, SearchOption.AllDirectories);
                     foreach (string filename in files)
                     {
-
+                        ExcelClass texcel = new ExcelClass(filename, ExportSetting.Instance.sExcelBytesPath);
+                        texcel.SaveFile();
+                        texcel.Close();
                     }
                     DLog.LogFormat("Complete  Export Data .count = {0}", files.Length);
                     UnityEditor.AssetDatabase.Refresh();
@@ -92,10 +98,20 @@ namespace LitEngineEditor
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelSharpPath)) return;
                 if (EditorUtility.DisplayDialog("Export C#", " Start Export C#?", "ok", "cancel"))
                 {
-                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, filestag, SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath, filestag, SearchOption.AllDirectories);
                     foreach (string filename in files)
                     {
+                        ExcelClass texcel = new ExcelClass(filename, ExportSetting.Instance.sExcelSharpPath);
+                        texcel.ExportReadClass();
+                        texcel.Close();
                     }
+
+                    FileStream tfile = File.OpenWrite(ExportSetting.Instance.sExcelSharpPath + "/ConfigBase.cs");
+                    LitEngine.Excel.TextWriter twt = new LitEngine.Excel.TextWriter(tfile);
+                    twt.WriteLine("namespace Config{interface ConfigBase{}}");
+                    twt.Close();
+                    tfile.Close();
+
                     DLog.LogFormat("Complete  Export C# .count = {0}", files.Length);
                     UnityEditor.AssetDatabase.Refresh();
                 }
@@ -126,4 +142,5 @@ namespace LitEngineEditor
 
         }
     }
+
 }
