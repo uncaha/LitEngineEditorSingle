@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,7 +11,6 @@
     <AssemblyName>LitEngineEditor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Unity Full v3.5</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +52,9 @@
     <Reference Include="UnityEngine">
       <HintPath>Mylib\UnityEngine.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="NPOI">
+      <HintPath>Mylib\NPOI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +174,8 @@
     <Compile Include="Script\ProtoNet\protobuf-net\SubItemToken.cs" />
     <Compile Include="Script\ProtoNet\protobuf-net\WireType.cs" />
     <Compile Include="Script\ProtoNet\ReadClass.cs" />
+    <Compile Include="Script\Excel\ExcelClass.cs" />
+    <Compile Include="Script\Excel\TextWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AppConfig.xml">

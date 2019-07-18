@@ -11,6 +11,7 @@ namespace LitEngineEditor
     {
         private Vector2 mScrollPosition = Vector2.zero;
         private StringBuilder mContext = new StringBuilder();
+        protected string filestag = "*.xls";
         public ExportExcelWiindow() : base()
         {
             ExWType = ExportWType.ExcelWindow;
@@ -76,7 +77,7 @@ namespace LitEngineEditor
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
                 if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
                 {
-                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, "*.*", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, filestag, SearchOption.AllDirectories);
                     foreach (string filename in files)
                     {
 
@@ -91,10 +92,9 @@ namespace LitEngineEditor
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelSharpPath)) return;
                 if (EditorUtility.DisplayDialog("Export C#", " Start Export C#?", "ok", "cancel"))
                 {
-                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, "*.*", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ExportSetting.Instance.sEncryptPath, filestag, SearchOption.AllDirectories);
                     foreach (string filename in files)
                     {
-                        LitEngine.IO.AesStreamBase.DeCryptFile(filename);
                     }
                     DLog.LogFormat("Complete  Export C# .count = {0}", files.Length);
                     UnityEditor.AssetDatabase.Refresh();
@@ -109,7 +109,7 @@ namespace LitEngineEditor
             if (!string.IsNullOrEmpty(ExportSetting.Instance.sExcelPath) && Directory.Exists(ExportSetting.Instance.sExcelPath))
             {
                 mContext.Remove(0, mContext.Length);
-                string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath, "*.*", SearchOption.AllDirectories);
+                string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath,filestag, SearchOption.AllDirectories);
                 foreach (string filename in files)
                 {
                     AddContext(filename);
