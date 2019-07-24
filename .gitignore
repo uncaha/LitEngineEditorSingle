@@ -2,3 +2,5 @@
 /LitEngineEditor/obj/Release
 /.vs
 .DS_Store
+LitEngineEditor/bin/Release/LitEngineEditor.dll
+LitEngineEditor/bin/Release/LitEngineEditor.pdb
