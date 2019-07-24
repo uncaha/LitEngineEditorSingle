@@ -276,7 +276,7 @@ namespace LitEngine.Excel
             Console.WriteLine(sb.ToString());
         }
 
-        public void ExportReadClass()
+        public List<string> ExportReadClass()
         {
             List<string> tsheetnames = GetSheetNames();
             foreach (string tname in tsheetnames)
@@ -345,6 +345,8 @@ namespace LitEngine.Excel
                 twt.Close();
                 tfile.Close();
             }
+
+            return tsheetnames;
         }
 
         public void WriteReadStr(TextWriter _writer, string _typestr, string _valuename)
