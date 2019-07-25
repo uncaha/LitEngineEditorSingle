@@ -4,7 +4,6 @@ using System.Text;
 using System.IO;
 using NPOI.SS.UserModel;
 using NPOI.HSSF.UserModel;
-using System.Data;
 namespace LitEngine.Excel
 {
     public class ExcelData
