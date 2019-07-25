@@ -12,7 +12,7 @@ namespace LitEngineEditor
     {
         private Vector2 mScrollPosition = Vector2.zero;
         private StringBuilder mContext = new StringBuilder();
-        protected string filestag = "*.xls";
+        protected string filestag = "*.xls|*.xlsx";
         public ExportExcelWiindow() : base()
         {
             ExWType = ExportWType.ExcelWindow;
