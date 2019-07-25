@@ -6,3 +6,5 @@ LitEngineEditor/bin/Release/LitEngineEditor.dll
 LitEngineEditor/bin/Release/LitEngineEditor.pdb
 LitEngineEditor/bin/Release/LitEngineEditor.dll
 LitEngineEditor/bin/Release/LitEngineEditor.pdb
+/LitEngineEditor/bin/Release
+/LitEngineEditor/bin/Debug

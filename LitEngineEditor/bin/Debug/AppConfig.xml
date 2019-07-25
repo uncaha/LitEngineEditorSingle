@@ -1,8 +1,0 @@
-﻿<root>
-  <App AppName ="TestApp">
-    <DefaultExportPath>Assets/BundlesResources/Data/</DefaultExportPath>
-    <NeedExportPath>Assets/NeedExportResources/</NeedExportPath>
-    <EditorBundlePath>Assets/../Data/</EditorBundlePath>
-    <StreamingBundlePath>Assets/StreamingAssets/Data/</StreamingBundlePath>
-  </App>
-</root>
