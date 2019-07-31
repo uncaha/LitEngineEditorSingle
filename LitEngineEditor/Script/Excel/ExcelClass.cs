@@ -293,10 +293,10 @@ namespace LitEngine.Excel
                 twt.WriteLine("namespace Config{").Indent();
                 twt.WriteLine($"public class {tname} : ConfigBase{"{"}").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{tname}.bytes{'"'};");
-                twt.WriteLine("protected Dictionary<int,Data> mMaps = new Dictionary<int, Data>();");
-                twt.WriteLine("public List<int> Keys { get; private set; }");
+                twt.WriteLine("protected Dictionary<string,Data> mMaps = new Dictionary<string, Data>();");
+                twt.WriteLine("public List<string> Keys { get; private set; }");
                 twt.WriteLine("public List<Data> Values { get; private set; }");
-                twt.WriteLine("public Dictionary<int, Data> Maps { get { return mMaps; } }");
+                twt.WriteLine("public Dictionary<string, Data> Maps { get { return mMaps; } }");
 
                 twt.WriteLine("public class Data{").Indent();
                 for (int i = 0; i < tdata.c; i++)
@@ -314,23 +314,26 @@ namespace LitEngine.Excel
                 twt.WriteLine($"public {tname}(){"{"}").Indent();
                 twt.WriteLine("byte[] tbys = LitEngine.LoaderManager.LoadConfigFile(kConfigfile);");
                 twt.WriteLine("if (tbys == null) return;");
+                twt.WriteLine("Values = new List<Data>();");
                 twt.WriteLine("AESReader treader = new AESReader(tbys);");
                 twt.WriteLine("int trow = treader.ReadInt32();");
                 twt.WriteLine("for (int i = 0; i < trow; i++){").Indent();
                 twt.WriteLine("Data tcfg = new Data(treader);");
                 twt.WriteLine("mMaps.Add(tcfg.id, tcfg);");
+                twt.WriteLine("Values.Add(tcfg);");
                 twt.Outdent().WriteLine("}");
                 twt.WriteLine("treader.Close();");
-                twt.WriteLine("Keys  = new List<int>(mMaps.Keys);");
-                twt.WriteLine("Values  = new List<Data>(mMaps.Values);");
+                twt.WriteLine("Keys  = new List<string>(mMaps.Keys);");
                 twt.Outdent().WriteLine("}");
 
 
-
-                twt.WriteLine("public Data this[int _id]{").Indent();
+                twt.WriteLine("public Data this[string _id]{").Indent();
                 twt.WriteLine("get { if (!mMaps.ContainsKey(_id)) return null; return mMaps[_id]; }");
                 twt.Outdent().WriteLine("}");
 
+                twt.WriteLine("public Data this[int _index]{").Indent();
+                twt.WriteLine("get { if (_index >= Values.Count) return null; return Values[_index]; }");
+                twt.Outdent().WriteLine("}");
 
                 twt.WriteLine("public int Count{").Indent();
                 twt.WriteLine("get { return mMaps.Count; }");
