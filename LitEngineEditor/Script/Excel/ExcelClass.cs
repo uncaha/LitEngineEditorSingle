@@ -65,11 +65,11 @@ namespace LitEngine.Excel
                 if (fileName.IndexOf(".xls") > 0) // 2003版本
                     mWorkbook = new HSSFWorkbook(mFile);
                 else
-                    Console.WriteLine("只支持xls格式。");
+                    DLog.LogError("只支持xls格式。");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception: " + ex.Message);
+                DLog.LogError("Exception: " + ex.Message);
                 if (mFile != null)
                     mFile.Close();
             }
