@@ -319,7 +319,7 @@ namespace LitEngine.Excel
                 twt.WriteLine("int trow = treader.ReadInt32();");
                 twt.WriteLine("for (int i = 0; i < trow; i++){").Indent();
                 twt.WriteLine("Data tcfg = new Data(treader);");
-                twt.WriteLine("mMaps.Add(tcfg.id, tcfg);");
+                twt.WriteLine("mMaps.Add(tcfg.id.ToString(), tcfg);");
                 twt.WriteLine("Values.Add(tcfg);");
                 twt.Outdent().WriteLine("}");
                 twt.WriteLine("treader.Close();");
