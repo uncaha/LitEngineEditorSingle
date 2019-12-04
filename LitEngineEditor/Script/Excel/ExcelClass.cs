@@ -199,7 +199,9 @@ namespace LitEngine.Excel
                     _write.Write(float.Parse(_value));
                     break;
                 case "string":
-                    _write.Write(_value);
+                    byte[] tbytes = System.Text.UTF8Encoding.UTF8.GetBytes(_value);
+                    _write.Write(tbytes.Length);
+                    _write.Write(tbytes);
                     break;
                 case "long":
                     _write.Write(long.Parse(_value));
