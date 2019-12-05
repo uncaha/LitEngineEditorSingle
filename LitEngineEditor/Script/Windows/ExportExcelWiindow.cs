@@ -5,7 +5,7 @@ using System.IO;
 using LitEngine.ScriptInterface;
 using LitEngine;
 using System.Text;
-using LitEngine.Excel;
+using ExportTool;
 namespace LitEngineEditor
 {
     public class ExportExcelWiindow : ExportBase
@@ -174,7 +174,7 @@ namespace Config{
                 }
 
                 FileStream tfile = File.OpenWrite(ExportSetting.Instance.sExcelSharpPath + "/ConfigManager.cs");
-                LitEngine.Excel.TextWriter twt = new LitEngine.Excel.TextWriter(tfile);
+                ExportTool.TextWriter twt = new ExportTool.TextWriter(tfile);
 
 
                 twt.WriteLine(cfgMgrUp);

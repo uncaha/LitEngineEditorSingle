@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace LitEngine.Excel
+namespace ExportTool
 {
     public class TextWriter
     {
