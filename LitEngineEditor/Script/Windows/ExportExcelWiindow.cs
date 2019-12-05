@@ -121,44 +121,6 @@ namespace LitEngineEditor
             }
 
         }
-
-        string cfgMgrUp = @"
-using System;
-using System.Collections.Generic;
-namespace Config{
-    public abstract class ConfigBase { }
-    public class ConfigManager{
-        private static object lockobj = new object();
-        private static ConfigManager sInstance = null;
-        public static ConfigManager Instance{
-            get{
-                if (sInstance == null){
-                    lock (lockobj){
-                        if (sInstance == null){
-                            sInstance = new ConfigManager();
-                        }
-                    }
-                }
-                return sInstance;
-            }
-        }
-        private Dictionary<Type, ConfigBase> Dic = new Dictionary<Type, ConfigBase>();
-        private ConfigManager() { ";
-        string cfgMgrdown = @"
-        }
-        private void Add<T>() where T : ConfigBase, new(){
-            T tcfg = new T();
-            Dic.Add(typeof(T), tcfg);
-        }
-
-        public static T Get<T>() where T : ConfigBase{
-            if (!Instance.Dic.ContainsKey(typeof(T))) return null;
-            return (T)Instance.Dic[typeof(T)];
-        }
-
-    }
-}
-        ";
         private void WriteShapFile()
         {
             if (EditorUtility.DisplayDialog("Export C#", " Start Export C#?", "ok", "cancel"))
@@ -173,20 +135,8 @@ namespace Config{
                     tcfgs.AddRange(tsnames);
                 }
 
-                FileStream tfile = File.OpenWrite(ExportSetting.Instance.sExcelSharpPath + "/ConfigManager.cs");
-                ExportTool.TextWriter twt = new ExportTool.TextWriter(tfile);
-
-
-                twt.WriteLine(cfgMgrUp);
-                twt.Indent().Indent().Indent();
-                foreach (string tcfg in tcfgs)
-                {
-                    twt.WriteLine($"Add<{tcfg}>();");
-                }
-                twt.Outdent().Outdent().Outdent();
-                twt.WriteLine(cfgMgrdown);
-                twt.Close();
-                tfile.Close();
+                ExportConfigManager tem = new ExportConfigManager(ExportSetting.Instance.sExcelSharpPath + "/ConfigManager.cs", tcfgs);
+                tem.StartExport();
 
                 DLog.LogFormat("Complete  Export C# .count = {0}", files.Length);
                 UnityEditor.AssetDatabase.Refresh();

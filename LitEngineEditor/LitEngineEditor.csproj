@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script\Excel\ConfigManager.cs" />
+    <Compile Include="Script\Excel\ExportConfigManager.cs" />
     <Compile Include="Script\Excel\ExportToCS.cs" />
     <Compile Include="Script\Excel\ExportToData.cs" />
     <Compile Include="Script\Excel\ExportToJsonData.cs" />
