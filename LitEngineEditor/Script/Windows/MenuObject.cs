@@ -79,5 +79,23 @@ public class MenuObject
             Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder );
         if (!Directory.Exists(ExportBase.Config.sEditorBundleFolder ))
             Directory.CreateDirectory(ExportBase.Config.sEditorBundleFolder );
+
+        string tconfigfolder = "ConfigData/";
+        string tdllfolder = "LogicDll/";
+
+        if (!Directory.Exists(ExportBase.Config.sStreamingBundleFolder + tconfigfolder))
+            Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder + tconfigfolder);
+
+        if (!Directory.Exists(ExportBase.Config.sStreamingBundleFolder + tdllfolder))
+            Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder + tdllfolder);
+
+        //ConfigData/
+        string tresdllfolder = "Assets/Resources/Data/";
+        string resconfigpath = tresdllfolder + tconfigfolder;
+        if (!Directory.Exists(resconfigpath))
+            Directory.CreateDirectory(resconfigpath);
+        string resdllpath = tresdllfolder + tdllfolder;
+        if (!Directory.Exists(resdllpath))
+            Directory.CreateDirectory(resdllpath);
     }
 }
