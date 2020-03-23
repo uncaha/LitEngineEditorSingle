@@ -777,6 +777,7 @@
     <Compile Include="Script\NPOI\Util\Units.cs" />
     <Compile Include="Script\NPOI\WP\UserModel\ICharacterRun.cs" />
     <Compile Include="Script\NPOI\WP\UserModel\IParagraph.cs" />
+    <Compile Include="Script\ProtoNet\protobuf-net.Reflection\ILCodeGenerator.cs" />
     <Compile Include="Script\Windows\AssetsImportProgress.cs" />
     <Compile Include="Script\Windows\ExportExcelWiindow.cs" />
     <Compile Include="Script\Windows\MenuObject.cs" />

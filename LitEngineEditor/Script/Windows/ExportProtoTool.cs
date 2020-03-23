@@ -82,7 +82,7 @@ namespace LitEngineEditor
             AddContext("Start Export:");
 
             int exitCode = 0;
-            CodeGenerator codegen = CSharpCodeGenerator.Default;
+            CodeGenerator codegen = ILCodeGenerator.Default;
             var set = new FileDescriptorSet();
             set.AddImportPath(ExportSetting.Instance.sProtoFilePath);
             string[] tpaths = Directory.GetDirectories(ExportSetting.Instance.sProtoFilePath);
