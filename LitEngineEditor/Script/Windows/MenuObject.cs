@@ -75,27 +75,30 @@ public class MenuObject
             Directory.CreateDirectory(ExportBase.Config.sResourcesPath);
         if (!Directory.Exists(ExportBase.Config.sDefaultFolder))
             Directory.CreateDirectory(ExportBase.Config.sDefaultFolder);
-        if (!Directory.Exists(ExportBase.Config.sStreamingBundleFolder))
-            Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder );
-        if (!Directory.Exists(ExportBase.Config.sEditorBundleFolder ))
-            Directory.CreateDirectory(ExportBase.Config.sEditorBundleFolder );
 
+        CreatLitEngineFolders(ExportBase.Config.sStreamingBundleFolder);
+        CreatLitEngineFolders(ExportBase.Config.sEditorBundleFolder);
+        CreatLitEngineFolders("Assets/Resources/Data/");
+    }
+
+    static void CreatLitEngineFolders(string rootPath)
+    {
         string tconfigfolder = "ConfigData/";
         string tdllfolder = "LogicDll/";
+        string tresfolder = "ResData/";
 
-        if (!Directory.Exists(ExportBase.Config.sStreamingBundleFolder + tconfigfolder))
-            Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder + tconfigfolder);
+        if (!Directory.Exists(rootPath))
+            Directory.CreateDirectory(rootPath);
 
-        if (!Directory.Exists(ExportBase.Config.sStreamingBundleFolder + tdllfolder))
-            Directory.CreateDirectory(ExportBase.Config.sStreamingBundleFolder + tdllfolder);
+        CreatDirectory(rootPath, tconfigfolder);
+        CreatDirectory(rootPath, tdllfolder);
+        CreatDirectory(rootPath, tresfolder);
+    }
 
-        //ConfigData/
-        string tresdllfolder = "Assets/Resources/Data/";
-        string resconfigpath = tresdllfolder + tconfigfolder;
-        if (!Directory.Exists(resconfigpath))
-            Directory.CreateDirectory(resconfigpath);
-        string resdllpath = tresdllfolder + tdllfolder;
-        if (!Directory.Exists(resdllpath))
-            Directory.CreateDirectory(resdllpath);
+    static void CreatDirectory(string rootPath,string forlder)
+    {
+        string tpath = rootPath + forlder;
+        if (!Directory.Exists(tpath))
+            Directory.CreateDirectory(tpath);
     }
 }
