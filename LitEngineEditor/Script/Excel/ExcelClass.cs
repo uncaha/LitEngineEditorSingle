@@ -10,6 +10,8 @@ namespace ExportTool
     public class ExcelData
     {
         static public int sStartLine = 3;
+        static public int sTypeLine = 1;
+        static public int sFieldNameLine = 2;
         public string name;
         public int c;
         public int r;

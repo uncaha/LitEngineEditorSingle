@@ -6,6 +6,7 @@ namespace LitEngineEditor
     {
         #region saved
         private const string sSavedCfg = "ExCfg.json";
+        private static string filePath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\";
         static private ExportSetting sIntance = null;
         static public ExportSetting Instance
         {
@@ -13,7 +14,7 @@ namespace LitEngineEditor
             {
                 if (sIntance == null)
                 {
-                    string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
+                    string tfullpath = filePath + sSavedCfg;
                     if (!File.Exists(tfullpath))
                     {
                         sIntance = new ExportSetting();
@@ -60,7 +61,10 @@ namespace LitEngineEditor
         static public void SaveCFG()
         {
             if (sIntance == null) return;
-            string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\" + sSavedCfg;
+            string tfullpath = filePath + sSavedCfg;
+            DLog.Log("save:"+ tfullpath);
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
             string tjson = UnityEngine.JsonUtility.ToJson(sIntance);
             File.WriteAllText(tfullpath, tjson);
 

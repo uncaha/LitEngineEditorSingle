@@ -36,20 +36,20 @@ namespace ExportTool
                 twt.WriteLine("namespace Config{").Indent();
                 twt.WriteLine($"public class {className} : ConfigBase{"{"}").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{className}.bytes{'"'};");
-                twt.WriteLine("protected Dictionary<string,Data> mMaps = new Dictionary<string, Data>();");
-                twt.WriteLine("public List<string> Keys { get; private set; }");
+                twt.WriteLine("protected Dictionary<int,Data> mMaps = new Dictionary<int, Data>();");
+                twt.WriteLine("public List<int> Keys { get; private set; }");
                 twt.WriteLine("public List<Data> Values { get; private set; }");
-                twt.WriteLine("public Dictionary<string, Data> Maps { get { return mMaps; } }");
+                twt.WriteLine("public Dictionary<int, Data> Maps { get { return mMaps; } }");
 
                 twt.WriteLine("public class Data{").Indent();
                 for (int i = 0; i < data.c; i++)
                 {
-                    twt.WriteLine($"public readonly {data.objects[1, i]} {data.objects[2, i]};");
+                    twt.WriteLine($"public readonly {data.objects[ExcelData.sTypeLine, i]} {data.objects[ExcelData.sFieldNameLine, i]};");
                 }
                 twt.WriteLine("public Data(LitEngine.IO.AESReader _reader){").Indent();
                 for (int i = 0; i < data.c; i++)
                 {
-                    WriteReadStr(twt, data.objects[1, i], data.objects[2, i]);
+                    WriteReadStr(twt, data.objects[ExcelData.sTypeLine, i], data.objects[ExcelData.sFieldNameLine, i]);
                 }
                 twt.Outdent().WriteLine("}");
                 twt.Outdent().WriteLine("}");
@@ -62,20 +62,16 @@ namespace ExportTool
                 twt.WriteLine("int trow = treader.ReadInt32();");
                 twt.WriteLine("for (int i = 0; i < trow; i++){").Indent();
                 twt.WriteLine("Data tcfg = new Data(treader);");
-                twt.WriteLine($"mMaps.Add(tcfg.{data.objects[2, 0]}.ToString(), tcfg);");
+                twt.WriteLine($"mMaps.Add(tcfg.{data.objects[ExcelData.sFieldNameLine, 0]}, tcfg);");
                 twt.WriteLine("Values.Add(tcfg);");
                 twt.Outdent().WriteLine("}");
                 twt.WriteLine("treader.Close();");
-                twt.WriteLine("Keys  = new List<string>(mMaps.Keys);");
+                twt.WriteLine("Keys  = new List<int>(mMaps.Keys);");
                 twt.Outdent().WriteLine("}");
 
 
-                twt.WriteLine("public Data this[string _id]{").Indent();
+                twt.WriteLine("public Data this[int _id]{").Indent();
                 twt.WriteLine("get { if (!mMaps.ContainsKey(_id)) return null; return mMaps[_id]; }");
-                twt.Outdent().WriteLine("}");
-
-                twt.WriteLine("public Data this[int _index]{").Indent();
-                twt.WriteLine("get { if (_index >= Values.Count) return null; return Values[_index]; }");
                 twt.Outdent().WriteLine("}");
 
                 twt.WriteLine("public int Count{").Indent();

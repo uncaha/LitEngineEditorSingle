@@ -63,6 +63,7 @@
     <Compile Include="Script\Excel\ExportToCS.cs" />
     <Compile Include="Script\Excel\ExportToData.cs" />
     <Compile Include="Script\Excel\ExportToJsonData.cs" />
+    <Compile Include="Script\Excel\LogTool.cs" />
     <Compile Include="Script\NPOI\DDF\AbstractEscherOptRecord.cs" />
     <Compile Include="Script\NPOI\DDF\DefaultEscherRecordFactory.cs" />
     <Compile Include="Script\NPOI\DDF\EscherArrayProperty.cs" />

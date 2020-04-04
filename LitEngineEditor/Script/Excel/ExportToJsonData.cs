@@ -29,7 +29,7 @@ namespace ExportTool
                     twt.Write($"\"{data.objects[i, 0]}\":{"{"}");
                     for (int j = 1; j < data.c; j++)
                     {
-                        System.Exception terro = WriteData(twt, data.objects[1, j], data.objects[2, j],data.objects[i, j]);
+                        System.Exception terro = WriteData(twt, data.objects[ExcelData.sTypeLine, j], data.objects[ExcelData.sFieldNameLine, j],data.objects[i, j]);
                         if (terro != null)
                         {
                             twt.Flush();

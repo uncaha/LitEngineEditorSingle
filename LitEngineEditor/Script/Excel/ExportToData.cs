@@ -28,7 +28,7 @@ namespace ExportTool
                 {
                     for (int j = 0; j < data.c; j++)
                     {
-                        System.Exception terro = WriteData(twt, data.objects[1, j], data.objects[i, j]);
+                        System.Exception terro = WriteData(twt, data.objects[ExcelData.sTypeLine, j], data.objects[i, j]);
                         if (terro != null)
                         {
                             twt.Flush();
