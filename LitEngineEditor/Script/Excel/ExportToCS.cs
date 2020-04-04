@@ -44,11 +44,13 @@ namespace ExportTool
                 twt.WriteLine("public class Data{").Indent();
                 for (int i = 0; i < data.c; i++)
                 {
+                    if (!data.IsNeed(i)) continue;
                     twt.WriteLine($"public readonly {data.objects[ExcelData.sTypeLine, i]} {data.objects[ExcelData.sFieldNameLine, i]};");
                 }
                 twt.WriteLine("public Data(LitEngine.IO.AESReader _reader){").Indent();
                 for (int i = 0; i < data.c; i++)
                 {
+                    if (!data.IsNeed(i)) continue;
                     WriteReadStr(twt, data.objects[ExcelData.sTypeLine, i], data.objects[ExcelData.sFieldNameLine, i]);
                 }
                 twt.Outdent().WriteLine("}");

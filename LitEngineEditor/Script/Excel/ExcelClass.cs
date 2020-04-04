@@ -9,14 +9,23 @@ namespace ExportTool
 {
     public class ExcelData
     {
-        static public int sStartLine = 3;
-        static public int sTypeLine = 1;
-        static public int sFieldNameLine = 2;
+        static public int sStartLine = 4;
+        static public int sCSLine = 0;
+        static public int sContext = 1;
+        static public int sTypeLine = 2;
+        static public int sFieldNameLine = 3;
+        static public string sNeedType = "c";
         public string name;
         public int c;
         public int r;
         public string[,] objects;
         private bool inited = false;
+
+        public bool IsNeed(int col)
+        {
+            string tcs = objects[sCSLine, col];
+            return !string.IsNullOrEmpty(tcs) && tcs.Contains(sNeedType);
+        }
         public void ReadExcelToArray(ISheet _sheet)
         {
             if (inited) return;

@@ -28,6 +28,7 @@ namespace ExportTool
                 {
                     for (int j = 0; j < data.c; j++)
                     {
+                        if (!data.IsNeed(j)) continue;
                         System.Exception terro = WriteData(twt, data.objects[ExcelData.sTypeLine, j], data.objects[i, j]);
                         if (terro != null)
                         {
