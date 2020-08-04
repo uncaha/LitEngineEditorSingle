@@ -13,8 +13,8 @@ namespace LitEngineEditor
         public static readonly BuildTarget[] sBuildTarget = { BuildTarget.Android, BuildTarget.iOS, BuildTarget.StandaloneWindows64 };
 
         public static string[] sCompressed = new string[2] { "Compressed", "UnCompressed" };
-        private static readonly BuildAssetBundleOptions[] sBuildOption= { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions .UncompressedAssetBundle};
-        public ExportObject():base()
+        private static readonly BuildAssetBundleOptions[] sBuildOption = { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions.UncompressedAssetBundle };
+        public ExportObject() : base()
         {
             ExWType = ExportWType.AssetsWindow;
         }
@@ -27,7 +27,7 @@ namespace LitEngineEditor
             ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
             ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
 
-            if(oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
+            if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
                 NeedSaveSetting();
 
             Config.OnGUI();
@@ -100,19 +100,20 @@ namespace LitEngineEditor
                 tsbd.AppendLine("{");
                 foreach (string titem in tresdepends)
                 {
-                    if (!titem.EndsWith(".cs") && !titem.EndsWith(".dll") &&  !titem.StartsWith(Config.sResourcesPath))
+                    if (!titem.EndsWith(".cs") && !titem.EndsWith(".dll") && !titem.StartsWith(Config.sResourcesPath))
                     {
                         tsbd.AppendLine(titem);
                         ishave = true;
                     }
                 }
                 tsbd.AppendLine("}");
-                if(ishave)
+                if (ishave)
                 {
                     DLog.Log(tsbd.ToString());
                 }
             }
         }
+
 
         public static void ExportAllBundle(BuildTarget _target)
         {
@@ -124,13 +125,13 @@ namespace LitEngineEditor
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
             bool tisCanExport = false;
-          //  Dictionary<string, ExObject> tfiledic = new Dictionary<string, ExObject>();
+            //  Dictionary<string, ExObject> tfiledic = new Dictionary<string, ExObject>();
             Dictionary<string, List<string>> tHavedfiledic = new Dictionary<string, List<string>>();
             Dictionary<string, string> tfiledic = new Dictionary<string, string>();
             foreach (FileInfo tfile in tfileinfos)
             {
                 if (tfile.Name.EndsWith(".meta")) continue;
-                if(tfiledic.ContainsKey(tfile.Name))
+                if (tfiledic.ContainsKey(tfile.Name))
                 {
                     if (!tHavedfiledic.ContainsKey(tfile.Name))
                         tHavedfiledic.Add(tfile.Name, new List<string>());
@@ -148,7 +149,7 @@ namespace LitEngineEditor
                 {
                     tfiledic.Add(tfile.Name, tfile.FullName);
                 }
-                
+
                 AssetBundleBuild tbuild = new AssetBundleBuild();
                 tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
                 string tRelativePath = tfile.FullName;
@@ -161,29 +162,93 @@ namespace LitEngineEditor
             if (!tisCanExport)
             {
                 GoExport(tpath, builds.ToArray(), _target);
-            }  
+            }
             else
             {
                 DLog.LogError("存在重名文件.导出失败.");
-                
+
                 List<string> tkeys = new List<string>(tHavedfiledic.Keys);
                 foreach (var key in tkeys)
                 {
                     System.Text.StringBuilder tstrbuilder = new System.Text.StringBuilder();
-                    tstrbuilder.AppendLine("重名文件:"+ key);
+                    tstrbuilder.AppendLine("重名文件:" + key);
                     tstrbuilder.AppendLine("{");
                     List<string> tfiles = tHavedfiledic[key];
                     foreach (var item in tfiles)
                     {
-                        tstrbuilder.AppendLine("    "+ item);
+                        tstrbuilder.AppendLine("    " + item);
                     }
 
                     tstrbuilder.AppendLine("}");
                     DLog.LogError(tstrbuilder.ToString());
                 }
-                
+
             }
-                
+
+        }
+
+        static Dictionary<string, UnityEditor.AssetBundleBuild> waitExportFiles = new Dictionary<string, UnityEditor.AssetBundleBuild>();
+        public static void ExportAllBundleFullPath(BuildTarget _target)
+        {
+            waitExportFiles.Clear();
+            string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+
+            List<UnityEditor.AssetBundleBuild> builds = new List<UnityEditor.AssetBundleBuild>();
+
+            DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+
+            foreach (FileInfo tfile in tfileinfos)
+            {
+                if (tfile.Name.EndsWith(".meta")) continue;
+                string tresPath = GetResPath(tfile.FullName);
+                if (waitExportFiles.ContainsKey(tresPath))
+                {
+                    continue;
+                }
+
+                UnityEditor.AssetBundleBuild tbuild = GetAssetBundleBuild(tfile.FullName);
+                builds.Add(tbuild);
+
+                waitExportFiles.Add(tresPath, tbuild);
+                AddAssetFromDependencles(tresPath, ref builds);
+            }
+            GoExport(tpath, builds.ToArray(), _target);
+        }
+
+        static string GetResPath(string pFullPath)
+        {
+            string tresPath = pFullPath;
+            int tindex = tresPath.IndexOf("Assets");
+            tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
+            tresPath = tresPath.Replace("\\", "/");
+            return tresPath;
+        }
+
+        static void AddAssetFromDependencles(string presPath, ref List<UnityEditor.AssetBundleBuild> buildList)
+        {
+            string[] tresdepends = AssetDatabase.GetDependencies(presPath, true);
+            foreach (var item in tresdepends)
+            {
+                if (item.EndsWith(".cs") || item.EndsWith(".dll")) continue;
+
+                if (waitExportFiles.ContainsKey(item)) continue;
+
+                UnityEditor.AssetBundleBuild tbuild = GetAssetBundleBuild(item);
+                buildList.Add(tbuild);
+
+                waitExportFiles.Add(item, tbuild);
+                AddAssetFromDependencles(item, ref buildList);
+            }
+        }
+        static UnityEditor.AssetBundleBuild GetAssetBundleBuild(string pFileName)
+        {
+            string tresPath = GetResPath(pFileName);
+            UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
+            tbuild.assetBundleName = tresPath + LitEngine.Loader.BaseBundle.sSuffixName;
+            tbuild.assetNames = new string[] { tresPath };
+            return tbuild;
         }
 
         public static void GoExport(string _path, AssetBundleBuild[] _builds, BuildTarget _target)
@@ -198,7 +263,7 @@ namespace LitEngineEditor
             if (File.Exists(tdespathname))
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
-           // AssetDatabase.Refresh();
+            // AssetDatabase.Refresh();
             Debug.Log("导出完成!");
         }
         #endregion
@@ -218,8 +283,8 @@ namespace LitEngineEditor
         static void MoveBundleToSideDate(BuildTarget _target)
         {
             Config.LoadConfig();
-            string tpath = Config.sDefaultFolder  + ExportConfig.GetTartFolder(_target);
-            string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sEditorBundleFolder  + ExportConfig.sResDataPath;
+            string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+            string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sEditorBundleFolder + ExportConfig.sResDataPath;
             tfullpath = tfullpath.Replace("\\", "/");
             MoveToPath(tpath, tfullpath, ExportConfig.GetTartFolder(_target));
         }
@@ -236,17 +301,17 @@ namespace LitEngineEditor
 
             foreach (FileInfo tfile in tfileinfos)
             {
-                File.Copy(tfile.FullName, _desPath + "/" + tfile.Name,true);
+                File.Copy(tfile.FullName, _desPath + "/" + tfile.Name, true);
             }
 
             Debug.Log("移动完成.");
         }
 
-        static void DeleteAllFile(string _path,string searchPatter = "*.*")
+        static void DeleteAllFile(string _path, string searchPatter = "*.*")
         {
             if (!Directory.Exists(_path)) return;
 
-            string[] tfiles =  Directory.GetFiles(_path, searchPatter, System.IO.SearchOption.AllDirectories);
+            string[] tfiles = Directory.GetFiles(_path, searchPatter, System.IO.SearchOption.AllDirectories);
             for (int i = 0; i < tfiles.Length; i++)
             {
                 string tfilename = tfiles[i];
