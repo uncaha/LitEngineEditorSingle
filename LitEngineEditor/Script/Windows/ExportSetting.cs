@@ -31,6 +31,7 @@ namespace LitEngineEditor
         }
 
         public int sCompressed = 1;
+        public int sBuildType = 0;
         public int sSelectedPlatm = 0;
 
         public string sMoveAssetsFilePath = "";

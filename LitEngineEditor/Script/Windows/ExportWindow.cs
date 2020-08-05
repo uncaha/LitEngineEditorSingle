@@ -12,7 +12,7 @@ namespace LitEngineEditor
         {
             ExportWindow window = (ExportWindow)EditorWindow.GetWindow(typeof(ExportWindow));
             window.minSize = new Vector2(430, 330);
-            window.maxSize = new Vector2(500, 330);
+            window.maxSize = new Vector2(500, 380);
             window.name = "ExportTool";
             window.Show();
         }

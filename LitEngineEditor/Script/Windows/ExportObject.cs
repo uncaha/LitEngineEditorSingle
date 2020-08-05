@@ -13,6 +13,7 @@ namespace LitEngineEditor
         public static readonly BuildTarget[] sBuildTarget = { BuildTarget.Android, BuildTarget.iOS, BuildTarget.StandaloneWindows64 };
 
         public static string[] sCompressed = new string[2] { "Compressed", "UnCompressed" };
+        public static string[] sBuildType = new string[4] { "every", "depInOne" ,"allInOne","folder"};
         private static readonly BuildAssetBundleOptions[] sBuildOption = { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions.UncompressedAssetBundle };
         public ExportObject() : base()
         {
@@ -26,21 +27,13 @@ namespace LitEngineEditor
             int oldcompressed = ExportSetting.Instance.sCompressed;
             ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
             ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
+            ExportSetting.Instance.sBuildType = GUILayout.SelectionGrid(ExportSetting.Instance.sBuildType, sBuildType, 4);
 
             if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
                 NeedSaveSetting();
 
             Config.OnGUI();
 
-            if (GUILayout.Button("Delete *.meta"))
-            {
-                DeleteMetaFile();
-            }
-
-            if (GUILayout.Button("Check OutSide Dependencies "))
-            {
-                CheckOutSideDependencies();
-            }
             if (GUILayout.Button("Export Assets"))
             {
                 ExportAllBundle(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
@@ -57,7 +50,7 @@ namespace LitEngineEditor
             }
             EditorGUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Move tO"))
+            if (GUILayout.Button("Move to"))
             {
                 string toldpath = ExportSetting.Instance.sMoveAssetsFilePath;
                 toldpath = EditorUtility.OpenFolderPanel("Move to path", toldpath, "");
@@ -75,45 +68,6 @@ namespace LitEngineEditor
         }
 
         #region export
-        public static void DeleteMetaFile()
-        {
-            DeleteAllFile(Config.sResourcesPath, "*.meta");
-            AssetDatabase.Refresh();
-        }
-
-        protected static void CheckOutSideDependencies()
-        {
-            DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
-
-            foreach (FileInfo tfile in tfileinfos)
-            {
-                string tRelativePath = tfile.FullName;
-                int tindex = tRelativePath.IndexOf("Assets");
-                tRelativePath = tRelativePath.Substring(tindex, tRelativePath.Length - tindex);
-                tRelativePath = tRelativePath.Replace("\\", "/");
-
-                string[] tresdepends = AssetDatabase.GetDependencies(tRelativePath, true);
-                bool ishave = false;
-                System.Text.StringBuilder tsbd = new System.Text.StringBuilder();
-                tsbd.AppendLine(tRelativePath);
-                tsbd.AppendLine("{");
-                foreach (string titem in tresdepends)
-                {
-                    if (!titem.EndsWith(".cs") && !titem.EndsWith(".dll") && !titem.StartsWith(Config.sResourcesPath))
-                    {
-                        tsbd.AppendLine(titem);
-                        ishave = true;
-                    }
-                }
-                tsbd.AppendLine("}");
-                if (ishave)
-                {
-                    DLog.Log(tsbd.ToString());
-                }
-            }
-        }
-
 
         public static void ExportAllBundle(BuildTarget _target)
         {
@@ -188,10 +142,90 @@ namespace LitEngineEditor
         }
 
         static Dictionary<string, UnityEditor.AssetBundleBuild> waitExportFiles = new Dictionary<string, UnityEditor.AssetBundleBuild>();
+
         public static void ExportAllBundleFullPath(BuildTarget _target)
         {
             waitExportFiles.Clear();
             string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+
+            List<UnityEditor.AssetBundleBuild> builds = null;
+            switch (ExportSetting.Instance.sBuildType)
+            {
+                case 0:
+                case 1:
+                    builds = GetBunldeBuildsEvery(tpath);
+                    break;
+                case 2:
+                    builds = GetBunldeBuildsAllInOne(tpath);
+                    break;
+                case 3:
+                    builds = GetBunldeBuildsFolder(tpath);
+                    break;
+            }
+            GoExport(tpath, builds.ToArray(), _target);
+        }
+
+        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsFolder(string path)
+        {
+            waitExportFiles.Clear();
+            string tpath = path;
+            List<UnityEditor.AssetBundleBuild> builds = new List<UnityEditor.AssetBundleBuild>();
+            DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
+            DirectoryInfo[] dirs = tdirfolder.GetDirectories("*.*", System.IO.SearchOption.TopDirectoryOnly);
+
+            foreach (var curDirectory in dirs)
+            {
+                FileInfo[] tfileinfos = curDirectory.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+                UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
+                tbuild.assetBundleName = curDirectory.Name + LitEngine.Loader.BaseBundle.sSuffixName;
+
+                List<string> tnamelist = new List<string>();
+                foreach (FileInfo tfile in tfileinfos)
+                {
+                    if (tfile.Name.EndsWith(".meta")) continue;
+                    if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
+                    string tresPath = GetResPath(tfile.FullName);
+                    tnamelist.Add(tresPath);
+                }
+
+                tbuild.assetNames = tnamelist.ToArray();
+                builds.Add(tbuild);
+            }
+
+            return builds;
+        }
+
+        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsAllInOne(string path)
+        {
+            waitExportFiles.Clear();
+            string tpath = path;
+            List<UnityEditor.AssetBundleBuild> builds = new List<UnityEditor.AssetBundleBuild>();
+
+            DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+            UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
+            tbuild.assetBundleName = "allinone" + LitEngine.Loader.BaseBundle.sSuffixName;
+
+            List<string> tnamelist = new List<string>();
+            foreach (FileInfo tfile in tfileinfos)
+            {
+                if (tfile.Name.EndsWith(".meta")) continue;
+                if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
+                string tresPath = GetResPath(tfile.FullName);
+                tnamelist.Add(tresPath);
+            }
+
+            tbuild.assetNames = tnamelist.ToArray();
+            builds.Add(tbuild);
+            return builds;
+        }
+
+        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsEvery(string path)
+        {
+            waitExportFiles.Clear();
+            string tpath = path;
 
             List<UnityEditor.AssetBundleBuild> builds = new List<UnityEditor.AssetBundleBuild>();
 
@@ -202,6 +236,7 @@ namespace LitEngineEditor
             foreach (FileInfo tfile in tfileinfos)
             {
                 if (tfile.Name.EndsWith(".meta")) continue;
+                if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
                 string tresPath = GetResPath(tfile.FullName);
                 if (waitExportFiles.ContainsKey(tresPath))
                 {
@@ -212,9 +247,13 @@ namespace LitEngineEditor
                 builds.Add(tbuild);
 
                 waitExportFiles.Add(tresPath, tbuild);
-                AddAssetFromDependencles(tresPath, ref builds);
+                if (ExportSetting.Instance.sBuildType == 0)
+                {
+                    AddAssetFromDependencles(tresPath, ref builds);
+                }
             }
-            GoExport(tpath, builds.ToArray(), _target);
+
+            return builds;
         }
 
         static string GetResPath(string pFullPath)
@@ -253,6 +292,7 @@ namespace LitEngineEditor
 
         public static void GoExport(string _path, AssetBundleBuild[] _builds, BuildTarget _target)
         {
+            if(_builds == null) return;
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
             if (_builds.Length == 0) return;
@@ -294,14 +334,24 @@ namespace LitEngineEditor
             if (!Directory.Exists(_desPath))
                 Directory.CreateDirectory(_desPath);
             DeleteAllFile(_desPath);
-
+            _socPath = _socPath.Replace("//", "/");
             DirectoryInfo tdirfolder = new DirectoryInfo(_socPath);
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             foreach (FileInfo tfile in tfileinfos)
             {
-                File.Copy(tfile.FullName, _desPath + "/" + tfile.Name, true);
+                string tresPath = tfile.FullName.Replace("//", "/");
+                int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
+                tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
+
+
+                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, "")).Replace("//", "/");
+
+                if (!Directory.Exists(dicPath))
+                    Directory.CreateDirectory(dicPath);
+
+                File.Copy(tfile.FullName, _desPath + "/" + tresPath, true);
             }
 
             Debug.Log("移动完成.");
