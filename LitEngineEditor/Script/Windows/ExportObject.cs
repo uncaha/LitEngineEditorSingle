@@ -14,6 +14,7 @@ namespace LitEngineEditor
 
         public static string[] sCompressed = new string[2] { "Compressed", "UnCompressed" };
         public static string[] sBuildType = new string[4] { "every", "depInOne" ,"allInOne","folder"};
+        public static string[] sPathType = new string[2] { "onlyName", "FullPath"};
         private static readonly BuildAssetBundleOptions[] sBuildOption = { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions.UncompressedAssetBundle };
         public ExportObject() : base()
         {
@@ -28,6 +29,7 @@ namespace LitEngineEditor
             ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
             ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
             ExportSetting.Instance.sBuildType = GUILayout.SelectionGrid(ExportSetting.Instance.sBuildType, sBuildType, 4);
+            ExportSetting.Instance.sPathType = GUILayout.SelectionGrid(ExportSetting.Instance.sPathType, sPathType, 2);
 
             if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
                 NeedSaveSetting();
@@ -36,7 +38,15 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Export Assets"))
             {
-                ExportAllBundle(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
+                if(ExportSetting.Instance.sPathType == 0)
+                {
+                    ExportAllBundle(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
+                }
+                else
+                {
+                    ExportAllBundleFullPath(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
+                }
+                
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -370,6 +380,15 @@ namespace LitEngineEditor
                     FileInfo fi = new FileInfo(tfilename);
                     fi.Attributes = FileAttributes.Normal;
                     fi.Delete();
+                }
+            }
+
+            string[] tdics = Directory.GetDirectories(_path, searchPatter, System.IO.SearchOption.AllDirectories);
+            foreach (var item in tdics)
+            {
+                if (Directory.Exists(item))
+                {
+                    Directory.Delete(item, true);
                 }
             }
             Debug.Log("清除结束.");
