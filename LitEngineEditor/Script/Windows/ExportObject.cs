@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using LitEngine.ScriptInterface;
 using LitEngine;
+using System.Text;
 namespace LitEngineEditor
 {
 
@@ -191,18 +192,22 @@ namespace LitEngineEditor
                 tbuild.assetBundleName = curDirectory.Name + LitEngine.Loader.BaseBundle.sSuffixName;
 
                 List<string> tnamelist = new List<string>();
-                foreach (FileInfo tfile in tfileinfos)
+
+                for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
                 {
+                    FileInfo tfile = tfileinfos[i];
                     if (tfile.Name.EndsWith(".meta")) continue;
                     if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
                     string tresPath = GetResPath(tfile.FullName);
                     tnamelist.Add(tresPath);
+
+                    EditorUtility.DisplayProgressBar("FolderBuild", "Build " + curDirectory.Name,(float)i / tmax);
                 }
 
                 tbuild.assetNames = tnamelist.ToArray();
                 builds.Add(tbuild);
             }
-
+            EditorUtility.ClearProgressBar();
             return builds;
         }
 
@@ -219,16 +224,21 @@ namespace LitEngineEditor
             tbuild.assetBundleName = "allinone" + LitEngine.Loader.BaseBundle.sSuffixName;
 
             List<string> tnamelist = new List<string>();
-            foreach (FileInfo tfile in tfileinfos)
+
+            for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
+                FileInfo tfile = tfileinfos[i];
                 if (tfile.Name.EndsWith(".meta")) continue;
                 if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
                 string tresPath = GetResPath(tfile.FullName);
                 tnamelist.Add(tresPath);
+
+                EditorUtility.DisplayProgressBar("AllInOne", "Build " + tfile.Name, (float)i / tmax);
             }
 
             tbuild.assetNames = tnamelist.ToArray();
             builds.Add(tbuild);
+            EditorUtility.ClearProgressBar();
             return builds;
         }
 
@@ -242,9 +252,9 @@ namespace LitEngineEditor
             DirectoryInfo tdirfolder = new DirectoryInfo(Config.sResourcesPath);
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
-
-            foreach (FileInfo tfile in tfileinfos)
+            for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
+                FileInfo tfile = tfileinfos[i];
                 if (tfile.Name.EndsWith(".meta")) continue;
                 if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
                 string tresPath = GetResPath(tfile.FullName);
@@ -261,8 +271,10 @@ namespace LitEngineEditor
                 {
                     AddAssetFromDependencles(tresPath, ref builds);
                 }
+                EditorUtility.DisplayProgressBar("单文件Build", tresPath , (float)i / tmax);
             }
-
+            
+            EditorUtility.ClearProgressBar();
             return builds;
         }
 
@@ -306,6 +318,7 @@ namespace LitEngineEditor
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
             if (_builds.Length == 0) return;
+
             BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
             string tmanifestname = ExportConfig.GetTartFolder(_target).Replace("/", "");
@@ -313,7 +326,7 @@ namespace LitEngineEditor
             if (File.Exists(tdespathname))
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
-            // AssetDatabase.Refresh();
+            AssetDatabase.Refresh();
             Debug.Log("导出完成!");
         }
         #endregion
@@ -349,22 +362,33 @@ namespace LitEngineEditor
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
+            List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
+
+            int i = 0;
+            int tmax = tfileinfos.Length;
             foreach (FileInfo tfile in tfileinfos)
             {
-                string tresPath = tfile.FullName.Replace("//", "/");
+                string tresPath = tfile.FullName.Replace("//","/");
                 int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
                 tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
-
-
-                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, "")).Replace("//", "/");
+               
+                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name,"")).Replace("//","/");
 
                 if (!Directory.Exists(dicPath))
                     Directory.CreateDirectory(dicPath);
 
-                File.Copy(tfile.FullName, _desPath + "/" + tresPath, true);
+                File.Copy(tfile.FullName, _desPath + "/" + tresPath,true);
+
+                ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile,tresPath);
+                byteFileInfoList.Add(tbyteinfo);
+
+                i++;
+                EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath,(float)i / tmax);
             }
 
             Debug.Log("移动完成.");
+            EditorUtility.ClearProgressBar();
+            CreatTxtInfo(byteFileInfoList,_desPath);
         }
 
         static void DeleteAllFile(string _path, string searchPatter = "*.*")
@@ -372,6 +396,7 @@ namespace LitEngineEditor
             if (!Directory.Exists(_path)) return;
 
             string[] tfiles = Directory.GetFiles(_path, searchPatter, System.IO.SearchOption.AllDirectories);
+            int tmax = tfiles.Length;
             for (int i = 0; i < tfiles.Length; i++)
             {
                 string tfilename = tfiles[i];
@@ -381,6 +406,9 @@ namespace LitEngineEditor
                     fi.Attributes = FileAttributes.Normal;
                     fi.Delete();
                 }
+
+                i++;
+                EditorUtility.DisplayProgressBar("清除目录文件", "Delete " + tfilename, (float)i / tmax);
             }
 
             string[] tdics = Directory.GetDirectories(_path, searchPatter, System.IO.SearchOption.AllDirectories);
@@ -391,11 +419,85 @@ namespace LitEngineEditor
                     Directory.Delete(item, true);
                 }
             }
+            EditorUtility.ClearProgressBar();
             Debug.Log("清除结束.");
         }
         #endregion
 
+        #region fileinfo
+        static void CreatTxtInfo(List<ByteFileInfo> pList, string pDesPath)
+        {
 
+            try
+            {
+                string tfilePath = pDesPath + "bytefileInfo.txt";
+                if (File.Exists(tfilePath))
+                {
+                    File.Delete(tfilePath);
+                }
+                StringBuilder tstrbd = new StringBuilder();
+                int i = 0;
+                int tcount = pList.Count;
+                foreach (var item in pList)
+                {
+                    item.fileMD5 = GetMD5File(item.fileFullPath);
+                    string tline = UnityEngine.JsonUtility.ToJson(item);
+                    tstrbd.AppendLine(tline);
+
+                    i++;
+                    EditorUtility.DisplayProgressBar("建立数据表 ", "Creat " + item.resName, (float)i / tcount);
+                }
+                EditorUtility.ClearProgressBar();
+                File.AppendAllText(tfilePath, tstrbd.ToString());
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("生成文件信息出现错误, error:" + ex.Message);
+            }
+
+            Debug.Log("生成文件信息完成.");
+        }
+        static ByteFileInfo CreatByteFileInfo(FileInfo pInfo, string pResName)
+        {
+            ByteFileInfo ret = new ByteFileInfo();
+            ret.fileFullPath = pInfo.FullName;
+            ret.resName = pResName;
+            ret.fileSize = pInfo.Length;
+            return ret;
+        }
+
+        public static string GetMD5File(string file)
+        {
+            try
+            {
+                FileStream fs = new FileStream(file, FileMode.Open);
+                System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(fs);
+                fs.Close();
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError("md5file() fail, error:" + ex.Message);
+            }
+            return null;
+        }
+
+
+        public class ByteFileInfo
+        {
+            public string fileFullPath { get; set; }
+            public string resName = "";
+            public string fileMD5 = "";
+            public long fileSize = 0;
+        }
+        #endregion
 
     }
 }
