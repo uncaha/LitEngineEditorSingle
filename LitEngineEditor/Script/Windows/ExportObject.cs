@@ -196,8 +196,7 @@ namespace LitEngineEditor
                 for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
                 {
                     FileInfo tfile = tfileinfos[i];
-                    if (tfile.Name.EndsWith(".meta")) continue;
-                    if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
+                    if (!IsResFile(tfile.Name)) continue;
                     string tresPath = GetResPath(tfile.FullName);
                     tnamelist.Add(tresPath);
 
@@ -228,8 +227,7 @@ namespace LitEngineEditor
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                if (tfile.Name.EndsWith(".meta")) continue;
-                if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
+                if (!IsResFile(tfile.Name)) continue;
                 string tresPath = GetResPath(tfile.FullName);
                 tnamelist.Add(tresPath);
 
@@ -255,8 +253,7 @@ namespace LitEngineEditor
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                if (tfile.Name.EndsWith(".meta")) continue;
-                if (tfile.Name.EndsWith(".cs") || tfile.Name.EndsWith(".dll")) continue;
+                if (!IsResFile(tfile.Name)) continue;
                 string tresPath = GetResPath(tfile.FullName);
                 if (waitExportFiles.ContainsKey(tresPath))
                 {
@@ -292,7 +289,7 @@ namespace LitEngineEditor
             string[] tresdepends = AssetDatabase.GetDependencies(presPath, true);
             foreach (var item in tresdepends)
             {
-                if (item.EndsWith(".cs") || item.EndsWith(".dll")) continue;
+                if (!IsResFile(item)) continue;
 
                 if (waitExportFiles.ContainsKey(item)) continue;
 
@@ -421,6 +418,17 @@ namespace LitEngineEditor
             }
             EditorUtility.ClearProgressBar();
             Debug.Log("清除结束.");
+        }
+
+        static bool IsResFile(string pName)
+        {
+            pName = pName.ToLowerInvariant();
+            if (pName.EndsWith(".cs")
+            || pName.EndsWith(".dll")
+            || pName.EndsWith(".meta")
+            || pName.EndsWith(".ds_store"))
+                return false;
+            return true;
         }
         #endregion
 
