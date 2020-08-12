@@ -361,10 +361,9 @@ namespace LitEngineEditor
 
             List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
 
-            int i = 0;
-            int tmax = tfileinfos.Length;
-            foreach (FileInfo tfile in tfileinfos)
+            for(int i = 0,tmax = tfileinfos.Length;i < tmax;i++)
             {
+                FileInfo tfile = tfileinfos[i];
                 string tresPath = tfile.FullName.Replace("//","/");
                 int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
                 tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
@@ -379,7 +378,6 @@ namespace LitEngineEditor
                 ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile,tresPath);
                 byteFileInfoList.Add(tbyteinfo);
 
-                i++;
                 EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath,(float)i / tmax);
             }
 
