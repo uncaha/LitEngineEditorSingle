@@ -10,6 +10,7 @@ namespace LitEngineEditor
 
     public class ExportObject : ExportBase
     {
+        const string sByteFileInfo = "bytefileInfo.txt";
         public static readonly string[] sPlatformList = new string[] { "Android", "iOS", "Windows64" };
         public static readonly BuildTarget[] sBuildTarget = { BuildTarget.Android, BuildTarget.iOS, BuildTarget.StandaloneWindows64 };
 
@@ -27,12 +28,19 @@ namespace LitEngineEditor
             GUILayout.Label("Platform", EditorStyles.boldLabel);
             int oldSelectedPlatm = ExportSetting.Instance.sSelectedPlatm;
             int oldcompressed = ExportSetting.Instance.sCompressed;
+            int oldsBuildType = ExportSetting.Instance.sBuildType;
+            int oldssPathType = ExportSetting.Instance.sPathType;
+
             ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
             ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
             ExportSetting.Instance.sBuildType = GUILayout.SelectionGrid(ExportSetting.Instance.sBuildType, sBuildType, 4);
             ExportSetting.Instance.sPathType = GUILayout.SelectionGrid(ExportSetting.Instance.sPathType, sPathType, 2);
 
-            if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm || oldcompressed != ExportSetting.Instance.sCompressed)
+            if(oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm 
+                || oldcompressed != ExportSetting.Instance.sCompressed
+                || oldsBuildType != ExportSetting.Instance.sBuildType
+                || oldssPathType != ExportSetting.Instance.sPathType
+                )
                 NeedSaveSetting();
 
             Config.OnGUI();
@@ -323,6 +331,8 @@ namespace LitEngineEditor
             if (File.Exists(tdespathname))
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
+
+            BuildByteFileInfoFile(_path,_path,_target);
             AssetDatabase.Refresh();
             Debug.Log("导出完成!");
         }
@@ -359,8 +369,6 @@ namespace LitEngineEditor
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
-            List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
-
             for(int i = 0,tmax = tfileinfos.Length;i < tmax;i++)
             {
                 FileInfo tfile = tfileinfos[i];
@@ -375,15 +383,11 @@ namespace LitEngineEditor
 
                 File.Copy(tfile.FullName, _desPath + "/" + tresPath,true);
 
-                ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile,tresPath);
-                byteFileInfoList.Add(tbyteinfo);
-
                 EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath,(float)i / tmax);
             }
 
             Debug.Log("移动完成.");
             EditorUtility.ClearProgressBar();
-            CreatTxtInfo(byteFileInfoList,_desPath);
         }
 
         static void DeleteAllFile(string _path, string searchPatter = "*.*")
@@ -431,6 +435,42 @@ namespace LitEngineEditor
         #endregion
 
         #region fileinfo
+
+        static void BuildByteFileInfoFile(string pSocPath, string pDesPath, BuildTarget _target)
+        {
+            pSocPath = pSocPath.Replace("//", "/");
+            DirectoryInfo tdirfolder = new DirectoryInfo(pSocPath);
+
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
+
+            List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
+
+            for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
+            {
+                FileInfo tfile = tfileinfos[i];
+                string tresPath = tfile.FullName.Replace("//", "/");
+                int tindex = tresPath.IndexOf(pSocPath) + pSocPath.Length;
+                tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
+
+                ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile, tresPath);
+                byteFileInfoList.Add(tbyteinfo);
+
+                EditorUtility.DisplayProgressBar("计算Build文件信息", tresPath, (float)i / tmax);
+            }
+
+            EditorUtility.ClearProgressBar();
+            CreatTxtInfo(byteFileInfoList, pDesPath);
+
+            AssetDatabase.Refresh();
+
+            string txtfile = pDesPath + sByteFileInfo;
+            UnityEditor.AssetBundleBuild[] tbuilds = new UnityEditor.AssetBundleBuild[1];
+            tbuilds[0] = new UnityEditor.AssetBundleBuild();
+            tbuilds[0].assetBundleName = sByteFileInfo + LitEngine.Loader.BaseBundle.sSuffixName;
+            tbuilds[0].assetNames = new string[]{txtfile};
+            BuildPipeline.BuildAssetBundles(pSocPath, tbuilds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
+
+        }
         static void CreatTxtInfo(List<ByteFileInfo> pList, string pDesPath)
         {
 
