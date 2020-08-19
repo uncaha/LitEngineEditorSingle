@@ -15,8 +15,8 @@ namespace LitEngineEditor
         public static readonly BuildTarget[] sBuildTarget = { BuildTarget.Android, BuildTarget.iOS, BuildTarget.StandaloneWindows64 };
 
         public static string[] sCompressed = new string[2] { "Compressed", "UnCompressed" };
-        public static string[] sBuildType = new string[4] { "every", "depInOne" ,"allInOne","folder"};
-        public static string[] sPathType = new string[2] { "onlyName", "FullPath"};
+        public static string[] sBuildType = new string[4] { "every", "depInOne", "allInOne", "folder" };
+        public static string[] sPathType = new string[2] { "onlyName", "FullPath" };
         private static readonly BuildAssetBundleOptions[] sBuildOption = { BuildAssetBundleOptions.ChunkBasedCompression, BuildAssetBundleOptions.UncompressedAssetBundle };
         public ExportObject() : base()
         {
@@ -36,7 +36,7 @@ namespace LitEngineEditor
             ExportSetting.Instance.sBuildType = GUILayout.SelectionGrid(ExportSetting.Instance.sBuildType, sBuildType, 4);
             ExportSetting.Instance.sPathType = GUILayout.SelectionGrid(ExportSetting.Instance.sPathType, sPathType, 2);
 
-            if(oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm 
+            if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm
                 || oldcompressed != ExportSetting.Instance.sCompressed
                 || oldsBuildType != ExportSetting.Instance.sBuildType
                 || oldssPathType != ExportSetting.Instance.sPathType
@@ -47,7 +47,7 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Export Assets"))
             {
-                if(ExportSetting.Instance.sPathType == 0)
+                if (ExportSetting.Instance.sPathType == 0)
                 {
                     ExportAllBundle(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
                 }
@@ -55,7 +55,7 @@ namespace LitEngineEditor
                 {
                     ExportAllBundleFullPath(sBuildTarget[ExportSetting.Instance.sSelectedPlatm]);
                 }
-                
+
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -208,7 +208,7 @@ namespace LitEngineEditor
                     string tresPath = GetResPath(tfile.FullName);
                     tnamelist.Add(tresPath);
 
-                    EditorUtility.DisplayProgressBar("FolderBuild", "Build " + curDirectory.Name,(float)i / tmax);
+                    EditorUtility.DisplayProgressBar("FolderBuild", "Build " + curDirectory.Name, (float)i / tmax);
                 }
 
                 tbuild.assetNames = tnamelist.ToArray();
@@ -276,9 +276,9 @@ namespace LitEngineEditor
                 {
                     AddAssetFromDependencles(tresPath, ref builds);
                 }
-                EditorUtility.DisplayProgressBar("单文件Build", tresPath , (float)i / tmax);
+                EditorUtility.DisplayProgressBar("单文件Build", tresPath, (float)i / tmax);
             }
-            
+
             EditorUtility.ClearProgressBar();
             return builds;
         }
@@ -319,7 +319,7 @@ namespace LitEngineEditor
 
         public static void GoExport(string _path, AssetBundleBuild[] _builds, BuildTarget _target)
         {
-            if(_builds == null) return;
+            if (_builds == null) return;
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
             if (_builds.Length == 0) return;
@@ -332,7 +332,7 @@ namespace LitEngineEditor
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
 
-            BuildByteFileInfoFile(_path,_path,_target);
+            BuildByteFileInfoFile(_path, _path, _target);
             AssetDatabase.Refresh();
             Debug.Log("导出完成!");
         }
@@ -369,21 +369,21 @@ namespace LitEngineEditor
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
-            for(int i = 0,tmax = tfileinfos.Length;i < tmax;i++)
+            for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                string tresPath = tfile.FullName.Replace("//","/");
+                string tresPath = tfile.FullName.Replace("//", "/");
                 int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
                 tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
-               
-                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name,"")).Replace("//","/");
+
+                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, "")).Replace("//", "/");
 
                 if (!Directory.Exists(dicPath))
                     Directory.CreateDirectory(dicPath);
 
-                File.Copy(tfile.FullName, _desPath + "/" + tresPath,true);
+                File.Copy(tfile.FullName, _desPath + "/" + tresPath, true);
 
-                EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath,(float)i / tmax);
+                EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath, (float)i / tmax);
             }
 
             Debug.Log("移动完成.");
@@ -467,32 +467,31 @@ namespace LitEngineEditor
             UnityEditor.AssetBundleBuild[] tbuilds = new UnityEditor.AssetBundleBuild[1];
             tbuilds[0] = new UnityEditor.AssetBundleBuild();
             tbuilds[0].assetBundleName = sByteFileInfo + LitEngine.Loader.BaseBundle.sSuffixName;
-            tbuilds[0].assetNames = new string[]{txtfile};
+            tbuilds[0].assetNames = new string[] { txtfile };
             BuildPipeline.BuildAssetBundles(pSocPath, tbuilds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
         }
         static void CreatTxtInfo(List<ByteFileInfo> pList, string pDesPath)
         {
-
             try
             {
-                string tfilePath = pDesPath + "bytefileInfo.txt";
+                string tfilePath = pDesPath + sByteFileInfo;
                 if (File.Exists(tfilePath))
                 {
                     File.Delete(tfilePath);
                 }
                 StringBuilder tstrbd = new StringBuilder();
-                int i = 0;
-                int tcount = pList.Count;
-                foreach (var item in pList)
+
+                for (int i = 0, tcount = pList.Count; i < tcount; i++)
                 {
+                    var item = pList[i];
                     item.fileMD5 = GetMD5File(item.fileFullPath);
                     string tline = UnityEngine.JsonUtility.ToJson(item);
                     tstrbd.AppendLine(tline);
 
-                    i++;
                     EditorUtility.DisplayProgressBar("建立数据表 ", "Creat " + item.resName, (float)i / tcount);
                 }
+
                 EditorUtility.ClearProgressBar();
                 File.AppendAllText(tfilePath, tstrbd.ToString());
             }
