@@ -422,7 +422,7 @@ namespace LitEngineEditor
             Debug.Log("清除结束.");
         }
 
-        static bool IsResFile(string pName)
+        public static bool IsResFile(string pName)
         {
             pName = pName.ToLowerInvariant();
             if (pName.EndsWith(".cs")
