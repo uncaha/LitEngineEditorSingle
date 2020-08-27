@@ -124,7 +124,7 @@ namespace LitEngineEditor
                 }
 
                 AssetBundleBuild tbuild = new AssetBundleBuild();
-                tbuild.assetBundleName = tfile.Name + LitEngine.Loader.BaseBundle.sSuffixName;
+                tbuild.assetBundleName = tfile.Name + LitEngine.LoadAsset.BaseBundle.sSuffixName;
                 string tRelativePath = tfile.FullName;
                 int tindex = tRelativePath.IndexOf("Assets");
                 tRelativePath = tRelativePath.Substring(tindex, tRelativePath.Length - tindex);
@@ -197,7 +197,7 @@ namespace LitEngineEditor
                 FileInfo[] tfileinfos = curDirectory.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
                 UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
-                tbuild.assetBundleName = curDirectory.Name + LitEngine.Loader.BaseBundle.sSuffixName;
+                tbuild.assetBundleName = curDirectory.Name + LitEngine.LoadAsset.BaseBundle.sSuffixName;
 
                 List<string> tnamelist = new List<string>();
 
@@ -228,7 +228,7 @@ namespace LitEngineEditor
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
 
             UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
-            tbuild.assetBundleName = "allinone" + LitEngine.Loader.BaseBundle.sSuffixName;
+            tbuild.assetBundleName = "allinone" + LitEngine.LoadAsset.BaseBundle.sSuffixName;
 
             List<string> tnamelist = new List<string>();
 
@@ -312,7 +312,7 @@ namespace LitEngineEditor
         {
             string tresPath = GetResPath(pFileName);
             UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
-            tbuild.assetBundleName = tresPath + LitEngine.Loader.BaseBundle.sSuffixName;
+            tbuild.assetBundleName = tresPath + LitEngine.LoadAsset.BaseBundle.sSuffixName;
             tbuild.assetNames = new string[] { tresPath };
             return tbuild;
         }
@@ -327,7 +327,7 @@ namespace LitEngineEditor
             BuildPipeline.BuildAssetBundles(_path, _builds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
             string tmanifestname = ExportConfig.GetTartFolder(_target).Replace("/", "");
-            string tdespathname = _path + "/" + LoaderManager.ManifestName + LitEngine.Loader.BaseBundle.sSuffixName;
+            string tdespathname = _path + "/" + LoaderManager.ManifestName + LitEngine.LoadAsset.BaseBundle.sSuffixName;
             if (File.Exists(tdespathname))
                 File.Delete(tdespathname);
             File.Copy(_path + tmanifestname, tdespathname);
@@ -367,7 +367,7 @@ namespace LitEngineEditor
             _socPath = _socPath.Replace("//", "/");
             DirectoryInfo tdirfolder = new DirectoryInfo(_socPath);
 
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
@@ -441,7 +441,7 @@ namespace LitEngineEditor
             pSocPath = pSocPath.Replace("//", "/");
             DirectoryInfo tdirfolder = new DirectoryInfo(pSocPath);
 
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.Loader.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
 
@@ -466,7 +466,7 @@ namespace LitEngineEditor
             string txtfile = pDesPath + sByteFileInfo;
             UnityEditor.AssetBundleBuild[] tbuilds = new UnityEditor.AssetBundleBuild[1];
             tbuilds[0] = new UnityEditor.AssetBundleBuild();
-            tbuilds[0].assetBundleName = sByteFileInfo + LitEngine.Loader.BaseBundle.sSuffixName;
+            tbuilds[0].assetBundleName = sByteFileInfo + LitEngine.LoadAsset.BaseBundle.sSuffixName;
             tbuilds[0].assetNames = new string[] { txtfile };
             BuildPipeline.BuildAssetBundles(pSocPath, tbuilds, sBuildOption[ExportSetting.Instance.sCompressed] | BuildAssetBundleOptions.DeterministicAssetBundle, _target);
 
