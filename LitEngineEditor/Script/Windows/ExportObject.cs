@@ -5,6 +5,7 @@ using System.IO;
 using LitEngine.ScriptInterface;
 using LitEngine;
 using System.Text;
+using LitEngine.LoadAsset;
 namespace LitEngineEditor
 {
 
@@ -444,7 +445,7 @@ namespace LitEngineEditor
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
-
+            string appmainfest = "AppManifest" + LitEngine.LoadAsset.BaseBundle.sSuffixName;
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
@@ -454,6 +455,10 @@ namespace LitEngineEditor
 
                 ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile, tresPath);
                 byteFileInfoList.Add(tbyteinfo);
+                if (tfile.FullName.EndsWith(appmainfest))
+                {
+                    tbyteinfo.priority = 999;
+                }
 
                 EditorUtility.DisplayProgressBar("计算Build文件信息", tresPath, (float)i / tmax);
             }
@@ -534,14 +539,6 @@ namespace LitEngineEditor
             return null;
         }
 
-
-        public class ByteFileInfo
-        {
-            public string fileFullPath { get; set; }
-            public string resName = "";
-            public string fileMD5 = "";
-            public long fileSize = 0;
-        }
         #endregion
 
     }
