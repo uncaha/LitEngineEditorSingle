@@ -82,7 +82,7 @@ namespace LitEngineEditor
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sMoveAssetsFilePath)) return;
                 Config.LoadConfig();
                 BuildTarget _target = sBuildTarget[ExportSetting.Instance.sSelectedPlatm];
-                string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+                string tpath = GetExportPath(_target);
                 MoveToPath(tpath, ExportSetting.Instance.sMoveAssetsFilePath, ExportConfig.GetTartFolder(_target));
             }
         }
@@ -166,7 +166,7 @@ namespace LitEngineEditor
         public static void ExportAllBundleFullPath(BuildTarget _target)
         {
             waitExportFiles.Clear();
-            string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+            string tpath = GetExportPath(_target);
 
             List<UnityEditor.AssetBundleBuild> builds = null;
             switch (ExportSetting.Instance.sBuildType)
@@ -183,6 +183,11 @@ namespace LitEngineEditor
                     break;
             }
             GoExport(tpath, builds.ToArray(), _target);
+        }
+
+        static public string GetExportPath(BuildTarget target)
+        {
+            return Config.sDefaultFolder + ExportConfig.GetTartFolder(target);
         }
 
         static public List<UnityEditor.AssetBundleBuild> GetBunldeBuildsFolder(string path)
@@ -344,7 +349,7 @@ namespace LitEngineEditor
         static public void MoveBUndleToStreamingPath(BuildTarget _target)
         {
             Config.LoadConfig();
-            string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+            string tpath = GetExportPath(_target);
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sStreamingBundleFolder + ExportConfig.sResDataPath;
             tfullpath = tfullpath.Replace("\\", "/");
             MoveToPath(tpath, tfullpath, ExportConfig.GetTartFolder(_target));
@@ -354,7 +359,7 @@ namespace LitEngineEditor
         static public void MoveBundleToSideDate(BuildTarget _target)
         {
             Config.LoadConfig();
-            string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
+            string tpath = GetExportPath(_target);
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sEditorBundleFolder + ExportConfig.sResDataPath;
             tfullpath = tfullpath.Replace("\\", "/");
             MoveToPath(tpath, tfullpath, ExportConfig.GetTartFolder(_target));

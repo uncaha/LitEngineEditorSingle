@@ -105,7 +105,7 @@ public class MenuObject
     }
 
     [UnityEditor.MenuItem("Export/生成Resources预留资源表")]
-    static void CreatModelAsset()
+    static public void CreatModelAsset()
     {
         string tgamepath = "Assets/Resources";
 
