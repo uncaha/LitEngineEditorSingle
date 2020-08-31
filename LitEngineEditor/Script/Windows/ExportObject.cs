@@ -173,7 +173,7 @@ namespace LitEngineEditor
             {
                 case 0:
                 case 1:
-                    builds = GetBunldeBuildsEvery(tpath);
+                    builds = GetBunldeBuildsEvery(tpath, ExportSetting.Instance.sBuildType == 0);
                     break;
                 case 2:
                     builds = GetBunldeBuildsAllInOne(tpath);
@@ -185,7 +185,7 @@ namespace LitEngineEditor
             GoExport(tpath, builds.ToArray(), _target);
         }
 
-        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsFolder(string path)
+        static public List<UnityEditor.AssetBundleBuild> GetBunldeBuildsFolder(string path)
         {
             waitExportFiles.Clear();
             string tpath = path;
@@ -219,7 +219,7 @@ namespace LitEngineEditor
             return builds;
         }
 
-        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsAllInOne(string path)
+        static public List<UnityEditor.AssetBundleBuild> GetBunldeBuildsAllInOne(string path)
         {
             waitExportFiles.Clear();
             string tpath = path;
@@ -249,7 +249,7 @@ namespace LitEngineEditor
             return builds;
         }
 
-        static List<UnityEditor.AssetBundleBuild> GetBunldeBuildsEvery(string path)
+        static public List<UnityEditor.AssetBundleBuild> GetBunldeBuildsEvery(string path , bool isHaveDep)
         {
             waitExportFiles.Clear();
             string tpath = path;
@@ -273,7 +273,7 @@ namespace LitEngineEditor
                 builds.Add(tbuild);
 
                 waitExportFiles.Add(tresPath, tbuild);
-                if (ExportSetting.Instance.sBuildType == 0)
+                if (isHaveDep)
                 {
                     AddAssetFromDependencles(tresPath, ref builds);
                 }
@@ -284,7 +284,7 @@ namespace LitEngineEditor
             return builds;
         }
 
-        static string GetResPath(string pFullPath)
+        static public string GetResPath(string pFullPath)
         {
             string tresPath = pFullPath;
             int tindex = tresPath.IndexOf("Assets");
@@ -293,7 +293,7 @@ namespace LitEngineEditor
             return tresPath;
         }
 
-        static void AddAssetFromDependencles(string presPath, ref List<UnityEditor.AssetBundleBuild> buildList)
+        static public void AddAssetFromDependencles(string presPath, ref List<UnityEditor.AssetBundleBuild> buildList)
         {
             string[] tresdepends = AssetDatabase.GetDependencies(presPath, true);
             foreach (var item in tresdepends)
@@ -309,7 +309,7 @@ namespace LitEngineEditor
                 AddAssetFromDependencles(item, ref buildList);
             }
         }
-        static UnityEditor.AssetBundleBuild GetAssetBundleBuild(string pFileName)
+        static public UnityEditor.AssetBundleBuild GetAssetBundleBuild(string pFileName)
         {
             string tresPath = GetResPath(pFileName);
             UnityEditor.AssetBundleBuild tbuild = new UnityEditor.AssetBundleBuild();
@@ -341,7 +341,7 @@ namespace LitEngineEditor
 
         #region move
 
-        static void MoveBUndleToStreamingPath(BuildTarget _target)
+        static public void MoveBUndleToStreamingPath(BuildTarget _target)
         {
             Config.LoadConfig();
             string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
@@ -351,7 +351,7 @@ namespace LitEngineEditor
             AssetDatabase.Refresh();
         }
 
-        static void MoveBundleToSideDate(BuildTarget _target)
+        static public void MoveBundleToSideDate(BuildTarget _target)
         {
             Config.LoadConfig();
             string tpath = Config.sDefaultFolder + ExportConfig.GetTartFolder(_target);
@@ -437,7 +437,7 @@ namespace LitEngineEditor
 
         #region fileinfo
 
-        static void BuildByteFileInfoFile(string pSocPath, string pDesPath, BuildTarget _target)
+        static public void BuildByteFileInfoFile(string pSocPath, string pDesPath, BuildTarget _target)
         {
             pSocPath = pSocPath.Replace("//", "/");
             DirectoryInfo tdirfolder = new DirectoryInfo(pSocPath);
