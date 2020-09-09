@@ -132,7 +132,7 @@ public class MenuObject
         {
             FileInfo tfile = tfileinfos[i];
             if (!ExportObject.IsResFile(tfile.Name)) continue;
-            string tresPath = tfile.FullName.Replace("\\", "/").Replace(trepPath, "").ToLowerInvariant();
+            string tresPath = ExportObject.GetFormatPath(tfile.FullName).Replace(trepPath, "").ToLowerInvariant();
             string tfindstr = "Resources/".ToLowerInvariant();
             int tindex = tresPath.IndexOf(tfindstr) + tfindstr.Length;
             tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);

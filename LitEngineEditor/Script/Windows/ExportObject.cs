@@ -59,6 +59,14 @@ namespace LitEngineEditor
 
             }
 
+            if (GUILayout.Button("Creat Infos"))
+            {
+                var ttar = sBuildTarget[ExportSetting.Instance.sSelectedPlatm];
+                string tpath = GetExportPath(ttar);
+                BuildByteFileInfoFile(tpath, tpath, ttar);
+                AssetDatabase.Refresh();
+            }
+
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Move Assets to SidePath"))
             {
@@ -444,18 +452,32 @@ namespace LitEngineEditor
 
         static public void BuildByteFileInfoFile(string pSocPath, string pDesPath, BuildTarget _target)
         {
-            pSocPath = pSocPath.Replace("//", "/");
+            string txtbytefile = pSocPath + sByteFileInfo + BaseBundle.sSuffixName;
+            if (File.Exists(txtbytefile))
+            {
+                File.Delete(txtbytefile);
+            }
+            string tmainfdest = txtbytefile + ".manifest";
+            if (File.Exists(tmainfdest))
+            {
+                File.Delete(tmainfdest);
+            }
+
+            pSocPath = GetFormatPath(pSocPath);
             DirectoryInfo tdirfolder = new DirectoryInfo(pSocPath);
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
             string appmainfest = "AppManifest" + LitEngine.LoadAsset.BaseBundle.sSuffixName;
+            string appPath = GetFormatPath(System.IO.Directory.GetCurrentDirectory());
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                string tresPath = tfile.FullName.Replace("//", "/");
-                int tindex = tresPath.IndexOf(pSocPath) + pSocPath.Length;
+                string tresPath = GetFormatPath(tfile.FullName).Replace(appPath, "");
+                string trpstr = pSocPath;
+
+                int tindex = tresPath.IndexOf(trpstr) + trpstr.Length;
                 tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
 
                 ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile, tresPath);
@@ -542,6 +564,10 @@ namespace LitEngineEditor
                 Debug.LogError("md5file() fail, error:" + ex.Message);
             }
             return null;
+        }
+        public static string GetFormatPath(string pPath)
+        {
+            return string.Join("/", pPath.Replace("\\", "/").Split('/'));
         }
 
         #endregion
