@@ -378,19 +378,21 @@ namespace LitEngineEditor
             if (!Directory.Exists(_desPath))
                 Directory.CreateDirectory(_desPath);
             DeleteAllFile(_desPath);
-            _socPath = _socPath.Replace("//", "/");
+            _desPath = GetFormatPath(_desPath);
+            _socPath = GetFormatPath(_socPath);
+            string appPath = GetFormatPath(System.IO.Directory.GetCurrentDirectory());
+
             DirectoryInfo tdirfolder = new DirectoryInfo(_socPath);
 
-            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
-
+            FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                string tresPath = tfile.FullName.Replace("//", "/");
+                string tresPath = GetFormatPath(tfile.FullName).Replace(appPath, "");
                 int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
                 tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
 
-                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, "")).Replace("//", "/");
+                string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, ""));
 
                 if (!Directory.Exists(dicPath))
                     Directory.CreateDirectory(dicPath);
@@ -399,7 +401,6 @@ namespace LitEngineEditor
 
                 EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath, (float)i / tmax);
             }
-
             Debug.Log("移动完成.");
             EditorUtility.ClearProgressBar();
         }
