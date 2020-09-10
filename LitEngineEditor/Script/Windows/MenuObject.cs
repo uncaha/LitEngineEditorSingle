@@ -80,21 +80,18 @@ public class MenuObject
 
         CreatLitEngineFolders(ExportBase.Config.sStreamingBundleFolder);
         CreatLitEngineFolders(ExportBase.Config.sEditorBundleFolder);
-        CreatLitEngineFolders("Assets/Resources/Data/");
     }
 
     static void CreatLitEngineFolders(string rootPath)
     {
-        string tconfigfolder = "ConfigData/";
-        string tdllfolder = "LogicDll/";
         string tresfolder = "ResData/";
+        string tconfigfolder = string.Format("{0}{1}/", tresfolder ,GameCore.ConfigDataPath);
 
         if (!Directory.Exists(rootPath))
             Directory.CreateDirectory(rootPath);
 
-        CreatDirectory(rootPath, tconfigfolder);
-        CreatDirectory(rootPath, tdllfolder);
         CreatDirectory(rootPath, tresfolder);
+        CreatDirectory(rootPath, tconfigfolder);
     }
 
     static void CreatDirectory(string rootPath,string forlder)

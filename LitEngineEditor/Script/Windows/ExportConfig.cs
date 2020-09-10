@@ -11,7 +11,7 @@ namespace LitEngineEditor
         #region datepath
         private const string cFileName = "AppConfig.xml";
         public string sDefaultFolder = "Assets/BundlesResources/Data/"; // 默认导出路径,统一不可更改
-        public string sResourcesPath = "Assets/ExportResources/"; //需要导出的资源文件夹
+        public string sResourcesPath = "Assets/ExportResources/"; //需要导出的资源文件夹于GameCore路径对应
         public string sEditorBundleFolder = "Assets/../Data/"; //编辑器工程外部资源路径
         public string sStreamingBundleFolder = "Assets/StreamingAssets/Data/";//内部资源路径
         public const string sResDataPath = "/ResData/";//app资源路径,固定分级
