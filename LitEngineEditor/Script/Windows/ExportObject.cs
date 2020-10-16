@@ -376,22 +376,21 @@ namespace LitEngineEditor
         public static void MoveToPath(string _socPath, string _desPath, string _targetname)
         {
             if (!Directory.Exists(_desPath))
+            {
                 Directory.CreateDirectory(_desPath);
+            }
+                
             DeleteAllFile(_desPath);
             _desPath = GetFormatPath(_desPath);
-            _socPath = GetFormatPath(_socPath);
-            string appPath = GetFormatPath(System.IO.Directory.GetCurrentDirectory());
-
+            
             DirectoryInfo tdirfolder = new DirectoryInfo(_socPath);
+            _socPath = GetFormatPath(tdirfolder.FullName);
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                string tresPath = GetFormatPath(tfile.FullName).Replace(appPath, "");
-                int tindex = tresPath.IndexOf(_socPath) + _socPath.Length;
-                tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
-
+                string tresPath = GetFormatPath(tfile.FullName).Replace(_socPath, "");
                 string dicPath = (_desPath + "/" + tresPath.Replace(tfile.Name, ""));
 
                 if (!Directory.Exists(dicPath))
@@ -464,23 +463,17 @@ namespace LitEngineEditor
                 File.Delete(tmainfdest);
             }
 
-            pSocPath = GetFormatPath(pSocPath);
             DirectoryInfo tdirfolder = new DirectoryInfo(pSocPath);
+            pSocPath = GetFormatPath(tdirfolder.FullName);
 
             FileInfo[] tfileinfos = tdirfolder.GetFiles("*" + LitEngine.LoadAsset.BaseBundle.sSuffixName, System.IO.SearchOption.AllDirectories);
 
             List<ByteFileInfo> byteFileInfoList = new List<ByteFileInfo>();
             string appmainfest = "AppManifest" + LitEngine.LoadAsset.BaseBundle.sSuffixName;
-            string appPath = GetFormatPath(System.IO.Directory.GetCurrentDirectory());
             for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
             {
                 FileInfo tfile = tfileinfos[i];
-                string tresPath = GetFormatPath(tfile.FullName).Replace(appPath, "");
-                string trpstr = pSocPath;
-
-                int tindex = tresPath.IndexOf(trpstr) + trpstr.Length;
-                tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
-
+                string tresPath = GetFormatPath(tfile.FullName).Replace(pSocPath, "");
                 ByteFileInfo tbyteinfo = CreatByteFileInfo(tfile, tresPath);
                 byteFileInfoList.Add(tbyteinfo);
                 if (tfile.FullName.EndsWith(appmainfest))
