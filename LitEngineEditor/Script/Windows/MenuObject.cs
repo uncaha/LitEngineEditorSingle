@@ -122,17 +122,16 @@ public class MenuObject
         {
             return tassetNames;
         }
-        string trepPath = Application.dataPath;
+        
         DirectoryInfo tdirfolder = new DirectoryInfo(pFullPath);
+        string trepPath = ExportObject.GetFormatPath(tdirfolder.FullName);
+
         FileInfo[] tfileinfos = tdirfolder.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
         for (int i = 0, tmax = tfileinfos.Length; i < tmax; i++)
         {
             FileInfo tfile = tfileinfos[i];
             if (!ExportObject.IsResFile(tfile.Name)) continue;
             string tresPath = ExportObject.GetFormatPath(tfile.FullName).Replace(trepPath, "").ToLowerInvariant();
-            string tfindstr = "Resources/".ToLowerInvariant();
-            int tindex = tresPath.IndexOf(tfindstr) + tfindstr.Length;
-            tresPath = tresPath.Substring(tindex, tresPath.Length - tindex);
             AssetMap.AssetObject tobj = new AssetMap.AssetObject(tresPath);
             tobj.isInSide = isInSide;
             tassetNames.Add(tobj);
