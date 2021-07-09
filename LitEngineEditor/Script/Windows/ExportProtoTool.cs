@@ -10,16 +10,18 @@ namespace LitEngineEditor
     {
         private Vector2 mScrollPosition = Vector2.zero;
         private StringBuilder mContext = new StringBuilder();
+
         public ExportProtoTool():base()
         {
             ExWType = ExportWType.PrptoWindow;
         }
         override public void OnGUI()
         {
-
             mScrollPosition = PublicGUI.DrawScrollview("Console",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 130);
             GUILayout.Label("ProtoFilePath", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
+            ExportSetting.Instance.sProtoClassString = EditorGUILayout.TextField("SuperClass:", ExportSetting.Instance.sProtoClassString, EditorStyles.textField);
+
             EditorGUILayout.TextField("", ExportSetting.Instance.sProtoFilePath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
@@ -55,6 +57,7 @@ namespace LitEngineEditor
                 if (EditorUtility.DisplayDialog("Export", " Start export cs file?", "ok","cancel"))
                 {
                     ExportCSFile();
+                    NeedSaveSetting();
                     UnityEditor.AssetDatabase.Refresh();
                 }
             }
@@ -82,7 +85,9 @@ namespace LitEngineEditor
             AddContext("Start Export:");
 
             int exitCode = 0;
-            CodeGenerator codegen = ILCodeGenerator.Default;
+            var codegen = ILCodeGenerator.Default;
+            codegen.superClassString = ExportSetting.Instance.sProtoClassString;
+
             var set = new FileDescriptorSet();
             set.AddImportPath(ExportSetting.Instance.sProtoFilePath);
             string[] tpaths = Directory.GetDirectories(ExportSetting.Instance.sProtoFilePath);

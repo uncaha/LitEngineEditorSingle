@@ -14,6 +14,10 @@ namespace ProtoBuf.Reflection
         /// </summary>
         public static ILCodeGenerator Default { get; } = new ILCodeGenerator();
         /// <summary>
+        /// super class 
+        /// </summary>
+        public string superClassString = "";
+        /// <summary>
         /// Create a new CSharpCodeGenerator instance
         /// </summary>
         protected ILCodeGenerator() { }
@@ -182,6 +186,7 @@ namespace ProtoBuf.Reflection
         {
             ctx.Outdent().WriteLine("}").WriteLine();
         }
+
         /// <summary>
         /// Start a message
         /// </summary>
@@ -192,7 +197,21 @@ namespace ProtoBuf.Reflection
             var tw = ctx.Output;
             WriteOptions(ctx, obj.Options);
             tw = ctx.Write($"{GetAccess(GetAccess(obj))} class {Escape(name)}");
-            if (obj.ExtensionRanges.Count != 0) tw.Write(" : global::ProtoBuf.IExtensible");
+
+            bool haveBase = !string.IsNullOrEmpty(superClassString);
+            string tclassStr = "";
+            string tgoogleClass = "global::ProtoBuf.IExtensible";
+            if (haveBase)
+            {
+                tclassStr = string.Format(":{0},{1}", superClassString, tgoogleClass);
+            }else
+            {
+                if(obj.ExtensionRanges.Count != 0)
+                    tclassStr = string.Format(":{0}", tgoogleClass);
+            }
+
+            tw.Write(tclassStr);
+
             tw.WriteLine();
             ctx.WriteLine("{").Indent();
             //if (obj.Options?.MessageSetWireFormat == true)

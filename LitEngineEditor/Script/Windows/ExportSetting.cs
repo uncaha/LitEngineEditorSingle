@@ -39,6 +39,7 @@ namespace LitEngineEditor
         //proto path
         public string sProtoFilePath = "";
         public string sCSFilePath = "";
+        public string sProtoClassString = "";
 
         //encrypt
         public string sEncryptPath = "";
