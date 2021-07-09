@@ -18,10 +18,14 @@ namespace LitEngineEditor
         override public void OnGUI()
         {
             mScrollPosition = PublicGUI.DrawScrollview("Console",mContext.ToString(), mScrollPosition, mWindow.position.size.x, 130);
-            GUILayout.Label("ProtoFilePath", EditorStyles.boldLabel);
-            EditorGUILayout.BeginHorizontal();
-            ExportSetting.Instance.sProtoClassString = EditorGUILayout.TextField("SuperClass:", ExportSetting.Instance.sProtoClassString, EditorStyles.textField);
 
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("SuperClass:", GUILayout.Width(80));
+            ExportSetting.Instance.sProtoClassString = EditorGUILayout.TextField("", ExportSetting.Instance.sProtoClassString, EditorStyles.textField);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("ProtoFilePath:", GUILayout.Width(80));
             EditorGUILayout.TextField("", ExportSetting.Instance.sProtoFilePath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
@@ -36,8 +40,9 @@ namespace LitEngineEditor
             }
             EditorGUILayout.EndHorizontal();
 
-            GUILayout.Label("ExportPath", EditorStyles.boldLabel);
+            
             EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("ExportPath:", GUILayout.Width(80));
             EditorGUILayout.TextField("", ExportSetting.Instance.sCSFilePath, EditorStyles.textField);
             if (GUILayout.Button("...", GUILayout.Width(25)))
             {
