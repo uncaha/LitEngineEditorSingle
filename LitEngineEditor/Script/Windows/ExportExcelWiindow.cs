@@ -10,7 +10,7 @@ namespace LitEngineEditor
 {
     public class ExportExcelWiindow : ExportBase
     {
-        private Vector2 mScrollPosition = Vector2.zero;
+        private Vector2 mScrollPosition = new Vector2(0,40);
         private StringBuilder mContext = new StringBuilder();
         protected string filestag = "*.xls";
         public ExportExcelWiindow() : base()
@@ -20,8 +20,10 @@ namespace LitEngineEditor
         }
         override public void OnGUI()
         {
-            mScrollPosition = PublicGUI.DrawScrollview("Files", mContext.ToString(), mScrollPosition, mWindow.position.size.x, 160);
+            GUILayout.Label("Tips:");
+            GUILayout.Label("line 1 = server or client, line 2 = context, line 3 = type, line 4 = fieldname");
 
+            mScrollPosition = PublicGUI.DrawScrollview("Files", mContext.ToString(), mScrollPosition, mWindow.position.size.x, 160);
             
             //excel目录
             EditorGUILayout.BeginHorizontal();
