@@ -83,9 +83,9 @@ namespace ExportTool
             catch (Exception ex)
             {
                 DLog.LogError("Exception: " + ex.Message);
-                if (mFile != null)
-                    mFile.Close();
             }
+
+            mFile?.Close();
         }
 
         public List<string> GetSheetNames()
