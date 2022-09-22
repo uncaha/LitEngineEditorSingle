@@ -9,16 +9,16 @@ namespace ExportTool
 {
     public class ExcelData
     {
-        static public int sStartLine = 4;
-        static public int sCSLine = 0;
-        static public int sContext = 1;
-        static public int sTypeLine = 2;
-        static public int sFieldNameLine = 3;
-        static public string sNeedType = "c";
-        public string name;
-        public int c;
-        public int r;
-        public string[,] objects;
+        public const int sStartLine = 4;
+        public const int sCSLine = 0;
+        public const int sContext = 1;
+        public const int sTypeLine = 2;
+        public const int sFieldNameLine = 3;
+        public const string sNeedType = "c";
+        public string name { get; private set; }
+        public int c { get; private set; }
+        public int r { get; private set; }
+        public string[,] objects { get; private set; }
         private bool inited = false;
 
         public bool IsNeed(int col)
@@ -87,11 +87,6 @@ namespace ExportTool
             if (pSheet != null)
             {
                 ret.ReadExcelToArray(pSheet);
-            }
-            else
-            {
-                ret.c = 0;
-                ret.r = 0;
             }
             return ret;
         }
