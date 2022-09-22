@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using NPOI.SS.UserModel;
-using NPOI.HSSF.UserModel;
+using Aspose.Cells;
+
 
 namespace ExportTool
 {
@@ -26,91 +26,67 @@ namespace ExportTool
             string tcs = objects[sCSLine, col];
             return !string.IsNullOrEmpty(tcs) && tcs.Contains(sNeedType);
         }
-        public void ReadExcelToArray(ISheet _sheet)
+        public void ReadExcelToArray(Worksheet pSheet)
         {
             if (inited) return;
-            name = _sheet.SheetName;
-            IRow firstRow = _sheet.GetRow(0);
-            c = firstRow.Cells.Count;
-            r = _sheet.PhysicalNumberOfRows;
+            name = pSheet.Name;
+            var tcells = pSheet.Cells;
+
+            c = tcells.MaxDataColumn + 1;
+            r = tcells.MaxDataRow + 1;
             objects = new string[r, c];
             int reali = 0;
             for (int i = 0; i < r; i++)
             {
-                IRow trow = _sheet.GetRow(reali);
-                if (trow == null) continue;
-                bool tishave = false;
+                var tfirst = tcells[i, 0];
+                if (string.IsNullOrEmpty(tfirst.StringValue?.Trim())) continue;
                 for (int j = 0; j < c; j++)
                 {
-                    objects[reali, j] = "";
-                    ICell tcell = trow.GetCell(j);
-                    if (tcell == null) continue;
-                    if (!tishave)
-                        tishave = true;
-                    objects[reali, j] = tcell.ToString().Trim();
+                    var cur = tcells[i, j];
+                    objects[reali, j] = cur.StringValue == null ? "" : cur.StringValue.Trim();
                 }
-                if (tishave)
-                    reali++;
+
+                reali++;
             }
+
             inited = true;
             r = reali;
         }
     }
     class ExcelClass
     {
-        //   private Excel._Application excelApp;
-        private string fileName = string.Empty;
-        // private Excel.Workbook wbclass;
-        private string savepath;
 
-        private FileStream mFile = null;
-        private HSSFWorkbook mWorkbook;
+        private string fileName = null;
+        private string savepath;
+        
+        private Workbook mWorkbook;
 
         
         public ExcelClass(string _filename, string _savepath)
         {
             fileName = _filename;
             savepath = _savepath;
-
+            if (!File.Exists(fileName)) return;
             try
             {
-                mFile = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                if (fileName.IndexOf(".xls") > 0) // 2003版本
-                    mWorkbook = new HSSFWorkbook(mFile);
+                if (fileName.EndsWith(".xls") || fileName.EndsWith(".xlsx")) 
+                    mWorkbook = new Workbook(fileName);
                 else
-                    DLog.LogError("只支持xls格式。");
+                    DLog.LogError("只支持xls 和 xlsx格式。");
             }
             catch (Exception ex)
             {
                 DLog.LogError("Exception: " + ex.Message);
             }
-
-            mFile?.Close();
         }
+        
 
-        public List<string> GetSheetNames()
-        {
-            List<string> list = new List<string>();
-            int tlen = mWorkbook.NumberOfSheets;
-            for (int i = 0; i < tlen; i++)
-            {
-                ISheet tsheet = mWorkbook[i];
-                list.Add(tsheet.SheetName);
-            }
-            return list;
-        }
-        public ISheet GetWorksheetByName(string name)
-        {
-            return mWorkbook.GetSheet(name);
-        }
-
-        public ExcelData GetContentHaveValue(string sheetName)
+        public ExcelData GetContentHaveValue(Worksheet pSheet)
         {
             ExcelData ret = new ExcelData();
-            ISheet sheet = GetWorksheetByName(sheetName);
-            if (sheet != null)
+            if (pSheet != null)
             {
-                ret.ReadExcelToArray(sheet);
+                ret.ReadExcelToArray(pSheet);
             }
             else
             {
@@ -122,20 +98,17 @@ namespace ExportTool
 
         public void Close()
         {
-            if (mWorkbook != null)
-                mWorkbook.Close();
-            if (mFile != null)
-                mFile.Close();
 
         }
 
         public void SaveToJson()
         {
-            List<string> tsheetnames = GetSheetNames();
-            foreach (string tname in tsheetnames)
+            if (mWorkbook == null) return;
+
+            foreach (var curSheet in mWorkbook.Worksheets)
             {
-                ExcelData tdata = GetContentHaveValue(tname);
-                string tfullname = savepath + "/" + tname + ".json";
+                ExcelData tdata = GetContentHaveValue(curSheet);
+                string tfullname = savepath + "/" + curSheet.Name + ".json";
 
                 ExportToJsonData tExp = new ExportToJsonData(tfullname, tdata);
                 tExp.StartExport();
@@ -144,11 +117,11 @@ namespace ExportTool
 
         public void SaveFile()
         {
-            List<string> tsheetnames = GetSheetNames();
-            foreach (string tname in tsheetnames)
+            if (mWorkbook == null) return;
+            foreach (var curSheet in mWorkbook.Worksheets)
             {
-                ExcelData tdata = GetContentHaveValue(tname);
-                string tfullname = savepath + "/" + tname + ".bytes";
+                ExcelData tdata = GetContentHaveValue(curSheet);
+                string tfullname = savepath + "/" + curSheet.Name + ".bytes";
 
                 ExportToData tExp = new ExportToData(tfullname, tdata);
                 tExp.StartExport();
@@ -158,12 +131,12 @@ namespace ExportTool
 
         public void ExoprtCfg(int starLine, StreamWriter logWriter, bool contentLog, bool isCrypt)
         {
-            List<string> tsheetnames = GetSheetNames();
-            foreach (string tname in tsheetnames)
+            if (mWorkbook == null) return;
+            foreach (var curSheet in mWorkbook.Worksheets)
             {
-                Console.WriteLine("Export " + tname);
-                ExcelData tdata = GetContentHaveValue(tname);
-                string tfullname = savepath + "/" + tname + ".bytes";
+                Console.WriteLine("Export " + curSheet.Name);
+                ExcelData tdata = GetContentHaveValue(curSheet);
+                string tfullname = savepath + "/" + curSheet.Name + ".bytes";
 
                 ExportToData tExp = new ExportToData(tfullname, tdata);
                 tExp.StartExport();
@@ -174,17 +147,20 @@ namespace ExportTool
 
         public List<string> ExportReadClass()
         {
-            List<string> tsheetnames = GetSheetNames();
-            foreach (string tname in tsheetnames)
+            if (mWorkbook == null) return null;
+            var ret = new List<string>();
+            foreach (var curSheet in mWorkbook.Worksheets)
             {
-                ExcelData tdata = GetContentHaveValue(tname);
-                string tfullname = savepath + "/" + tname + ".cs";
+                ExcelData tdata = GetContentHaveValue(curSheet);
+                string tfullname = savepath + "/" + curSheet.Name + ".cs";
 
-                ExportToCS tcs = new ExportToCS(tname, tfullname, tdata);
+                ExportToCS tcs = new ExportToCS(curSheet.Name, tfullname, tdata);
                 tcs.StartExport();
+                
+                ret.Add(curSheet.Name);
             }
 
-            return tsheetnames;
+            return ret;
         }
 
 
