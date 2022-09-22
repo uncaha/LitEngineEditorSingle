@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Text;
+using LitEngine.Tool;
+
 namespace LitEngineEditor
 {
     public class ExportSetting
@@ -21,7 +23,7 @@ namespace LitEngineEditor
                     }
                     else
                     {
-                        sIntance = UnityEngine.JsonUtility.FromJson<ExportSetting>(File.ReadAllText(tfullpath));
+                        sIntance = DataConvert.FromJson<ExportSetting>(File.ReadAllText(tfullpath));
                     }
 
                 }
@@ -68,7 +70,7 @@ namespace LitEngineEditor
             DLog.Log("save:"+ tfullpath);
             if (!Directory.Exists(filePath))
                 Directory.CreateDirectory(filePath);
-            string tjson = UnityEngine.JsonUtility.ToJson(sIntance);
+            string tjson = DataConvert.ToJson(sIntance);
             File.WriteAllText(tfullpath, tjson);
 
         }

@@ -6,6 +6,8 @@ using LitEngine.ScriptInterface;
 using LitEngine;
 using System.Text;
 using LitEngine.LoadAsset;
+using LitEngine.Tool;
+
 namespace LitEngineEditor
 {
 
@@ -512,7 +514,7 @@ namespace LitEngineEditor
                 {
                     var item = pList[i];
                     item.fileMD5 = GetMD5File(item.fileFullPath);
-                    string tline = UnityEngine.JsonUtility.ToJson(item);
+                    string tline = DataConvert.ToJson(item);
                     tstrbd.AppendLine(tline);
 
                     EditorUtility.DisplayProgressBar("建立数据表 ", "Creat " + item.resName, (float)i / tcount);
