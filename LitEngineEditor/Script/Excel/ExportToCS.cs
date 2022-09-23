@@ -37,7 +37,7 @@ namespace ExportTool
                 twt.WriteLine("using LitEngine.IO;");
                 twt.WriteLine("using System.Collections.Generic;");
                 twt.WriteLine("namespace Config{").Indent();
-                twt.WriteLine($"public class {className} : ConfigBase{"{"}").Indent();
+                twt.WriteLine($"public class {className} {{").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{className}.bytes{'"'};");
                 twt.WriteLine($"public Dictionary<{tfirstTypeStr},Data> Maps {{ get; private set; }} = new Dictionary<{tfirstTypeStr}, Data>();");
                 twt.WriteLine($"public List<{tfirstTypeStr}> Keys {{ get; private set; }}");

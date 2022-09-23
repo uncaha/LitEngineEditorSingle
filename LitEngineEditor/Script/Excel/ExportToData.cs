@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace ExportTool
@@ -120,26 +121,26 @@ namespace ExportTool
             switch (_typestr)
             {
                 case "int":
-                    _write.Write(int.Parse(_value));
+                    _write.Write(int.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "float":
-                    _write.Write(float.Parse(_value));
+                    _write.Write(float.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "string":
-                    {
-                        byte[] tbytes = System.Text.UTF8Encoding.UTF8.GetBytes(_value);
-                        _write.Write(tbytes.Length);
-                        _write.Write(tbytes);
-                    }
+                {
+                    byte[] tbytes = System.Text.UTF8Encoding.UTF8.GetBytes(_value);
+                    _write.Write(tbytes.Length);
+                    _write.Write(tbytes);
+                }
                     break;
                 case "long":
-                    _write.Write(long.Parse(_value));
+                    _write.Write(long.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "byte":
-                    _write.Write(byte.Parse(_value));
+                    _write.Write(byte.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "short":
-                    _write.Write(short.Parse(_value));
+                    _write.Write(short.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "bool":
                     _write.Write(bool.Parse(_value));
@@ -152,22 +153,22 @@ namespace ExportTool
             switch (_typestr)
             {
                 case "int":
-                    _write.Write((int)0);
+                    _write.Write(default(int));
                     break;
                 case "float":
-                    _write.Write((float)0);
+                    _write.Write(default(float));
                     break;
                 case "string":
-                    _write.Write((int)0);
+                    _write.Write("");
                     break;
                 case "long":
-                    _write.Write((long)0);
+                    _write.Write(default(long));
                     break;
                 case "byte":
-                    _write.Write((byte)0);
+                    _write.Write(default(byte));
                     break;
                 case "short":
-                    _write.Write((short)0);
+                    _write.Write(default(short));
                     break;
                 case "bool":
                     _write.Write(false);

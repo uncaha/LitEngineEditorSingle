@@ -9,36 +9,22 @@ namespace ExportTool
 using System;
 using System.Collections.Generic;
 namespace Config{
-    public abstract class ConfigBase { }
     public class ConfigManager{
-        private static object lockobj = new object();
         private static ConfigManager sInstance = null;
         public static ConfigManager Instance{
             get{
                 if (sInstance == null){
-                    lock (lockobj){
-                        if (sInstance == null){
-                            sInstance = new ConfigManager();
-                        }
+                    if (sInstance == null){
+                        sInstance = new ConfigManager();
+                        sInstance.Init();
                     }
                 }
                 return sInstance;
             }
         }
-        private Dictionary<Type, ConfigBase> Dic = new Dictionary<Type, ConfigBase>();
-        private ConfigManager() { ";
+        
+        private ConfigManager() { }";
         string cfgMgrdown = @"
-        }
-        private void Add<T>() where T : ConfigBase, new(){
-            T tcfg = new T();
-            Dic.Add(typeof(T), tcfg);
-        }
-
-        public static T Get<T>() where T : ConfigBase{
-            if (!Instance.Dic.ContainsKey(typeof(T))) return null;
-            return (T)Instance.Dic[typeof(T)];
-        }
-
     }
 }
         ";
@@ -66,12 +52,25 @@ namespace Config{
                     ExportTool.TextWriter twt = new ExportTool.TextWriter(tfile);
 
                     twt.WriteLine(cfgMgrUp);
-                    twt.Indent().Indent().Indent();
+                    twt.Indent().Indent();
                     foreach (string tcfg in configNames)
                     {
-                        twt.WriteLine($"Add<{tcfg}>();");
+                        twt.WriteLine($"public {tcfg} {tcfg}Data {{ get; private set; }}");
                     }
-                    twt.Outdent().Outdent().Outdent();
+                    twt.Outdent().Outdent();
+
+                    twt.Indent().Indent();
+                    twt.WriteLine("void Init(){");
+                    twt.Indent();
+                    foreach (string tcfg in configNames)
+                    {
+                        twt.WriteLine($"{tcfg}Data = new {tcfg}();");
+                    }
+                    twt.Outdent();
+                    twt.WriteLine("}");
+                    twt.Outdent().Outdent();
+                    
+                    
                     twt.WriteLine(cfgMgrdown);
                     twt.Close();
                     tfile.Close();
