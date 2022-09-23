@@ -71,7 +71,7 @@ public class MenuObject
     #endregion
 
     [UnityEditor.MenuItem("LitEngine/CreatDirectory For App")]
-    static void CreatDirectoryForApp()
+    static internal void CreatDirectoryForApp()
     {
         if (!Directory.Exists(ExportBase.Config.sResourcesPath))
             Directory.CreateDirectory(ExportBase.Config.sResourcesPath);
@@ -85,7 +85,7 @@ public class MenuObject
     static void CreatLitEngineFolders(string rootPath)
     {
         string tresfolder = "ResData/";
-        string tconfigfolder = string.Format("{0}{1}/", tresfolder ,GameCore.ConfigDataPath);
+        string tconfigfolder = $"{tresfolder}{GameCore.ConfigDataPath}/";
 
         if (!Directory.Exists(rootPath))
             Directory.CreateDirectory(rootPath);
