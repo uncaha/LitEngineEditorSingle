@@ -92,6 +92,16 @@ namespace LitEngineEditor
             {
                 WriteJsonFile();
             }
+            
+            if (GUILayout.Button("Move To Resources"))
+            {
+                MoveToResources();
+            }
+            
+            if (GUILayout.Button("Move To ExportFolder"))
+            {
+                MoveToExportFolder();
+            }
         }
         
         string[] GetExcelFiles()
@@ -190,6 +200,25 @@ namespace LitEngineEditor
                 DLog.LogFormat("Complete  Export Data .filecount = {0}", files.Length);
                 UnityEditor.AssetDatabase.Refresh();
             }
+        }
+
+        private void MoveToResources()
+        {
+            var tpath = ExportSetting.Instance.sExcelBytesPath;
+            var tdespath = ExportObject.GetFormatPath($"{System.IO.Directory.GetCurrentDirectory()}/Assets/Resources/{GameCore.ConfigDataPath}");
+
+            ExportObject.MoveToPath(tpath, tdespath, "");
+            AssetDatabase.Refresh();
+        }
+        
+        private void MoveToExportFolder()
+        {
+            var tpath = ExportSetting.Instance.sExcelBytesPath;
+            var tdespath =
+                $"{System.IO.Directory.GetCurrentDirectory()}/{GameCore.ExportPath}/{GameCore.ConfigDataPath}";
+
+            ExportObject.MoveToPath(tpath, tdespath, "");
+            AssetDatabase.Refresh();
         }
     }
 

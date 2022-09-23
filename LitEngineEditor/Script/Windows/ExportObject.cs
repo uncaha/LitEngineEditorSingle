@@ -402,7 +402,7 @@ namespace LitEngineEditor
 
                 EditorUtility.DisplayProgressBar("Copy文件", "Copy " + tresPath, (float)i / tmax);
             }
-            Debug.Log("移动完成.");
+            Debug.Log($"移动完成.Count = {tfileinfos.Length}, path = {_desPath}");
             EditorUtility.ClearProgressBar();
         }
 
