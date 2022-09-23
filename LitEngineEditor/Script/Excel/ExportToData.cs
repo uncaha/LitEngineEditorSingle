@@ -35,7 +35,7 @@ namespace ExportTool
                         twt.Close();
                         tfile.Close();
                         File.Delete(tempFile);
-                        ShowError(i, 0,"配置表第一列id不能为空,请检查配置表.是否有空列,并删除.");
+                        ShowError(i, 0,"配置表第一列不能为空,请检查配置表.是否有空列,并删除.");
                         return;
                     }
                     for (int j = 0; j < data.c; j++)

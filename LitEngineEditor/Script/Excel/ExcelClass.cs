@@ -35,22 +35,22 @@ namespace ExportTool
             c = tcells.MaxDataColumn + 1;
             r = tcells.MaxDataRow + 1;
             objects = new string[r, c];
-            int reali = 0;
-            for (int i = 0; i < r; i++)
+            int i = 0;
+            for (; i < r; i++)
             {
                 var tfirst = tcells[i, 0];
-                if (string.IsNullOrEmpty(tfirst.StringValue?.Trim())) continue;
+                if (string.IsNullOrEmpty(tfirst.StringValue?.Trim())) break;
+                
                 for (int j = 0; j < c; j++)
                 {
                     var cur = tcells[i, j];
-                    objects[reali, j] = cur.StringValue == null ? "" : cur.StringValue.Trim();
+                    objects[i, j] = cur.StringValue == null ? "" : cur.StringValue.Trim();
                 }
 
-                reali++;
             }
 
             inited = true;
-            r = reali;
+            r = i;
         }
     }
     class ExcelClass
@@ -124,7 +124,7 @@ namespace ExportTool
         }
 
 
-        public void ExoprtCfg(int starLine, StreamWriter logWriter, bool contentLog, bool isCrypt)
+        public void ExoprtCfg()
         {
             if (mWorkbook == null) return;
             foreach (var curSheet in mWorkbook.Worksheets)
