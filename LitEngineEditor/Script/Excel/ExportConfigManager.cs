@@ -14,10 +14,8 @@ namespace Config{
         public static ConfigManager Instance{
             get{
                 if (sInstance == null){
-                    if (sInstance == null){
-                        sInstance = new ConfigManager();
-                        sInstance.Init();
-                    }
+                    sInstance = new ConfigManager();
+                    sInstance.Init();
                 }
                 return sInstance;
             }
