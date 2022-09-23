@@ -7,7 +7,7 @@ namespace LitEngineEditor
     public class ExportWindow : EditorWindow
     {
         #region Windows
-        [UnityEditor.MenuItem("Export/ExportTool")]
+        [UnityEditor.MenuItem("LitEngine/ExportTool")]
         static void Init()
         {
             ExportWindow window = (ExportWindow)EditorWindow.GetWindow(typeof(ExportWindow));
