@@ -70,7 +70,7 @@ public class MenuObject
     }
     #endregion
 
-    [UnityEditor.MenuItem("Export/CreatDirectory For App")]
+    [UnityEditor.MenuItem("LitEngine/CreatDirectory For App")]
     static void CreatDirectoryForApp()
     {
         if (!Directory.Exists(ExportBase.Config.sResourcesPath))
@@ -101,7 +101,7 @@ public class MenuObject
             Directory.CreateDirectory(tpath);
     }
 
-    [UnityEditor.MenuItem("Export/生成Resources预留资源表")]
+    [UnityEditor.MenuItem("LitEngine/生成Resources预留资源表")]
     static public void CreatModelAsset()
     {
         string tgamepath = "Assets/Resources";
