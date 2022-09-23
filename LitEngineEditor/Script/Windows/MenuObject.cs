@@ -12,7 +12,7 @@ public class MenuObject
     static T AddScript<T>(GameObject _object) where T : BehaviourInterfaceBase
     {
         if (_object == null) return null;
-        ExportBase.Config.LoadConfig();
+
         T tscript = _object.AddComponent<T>();
 
         UnityEngine.SceneManagement.Scene tscene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();

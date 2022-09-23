@@ -25,7 +25,6 @@ namespace LitEngineEditor
                 if (sConfig == null)
                 {
                     sConfig = new ExportConfig();
-                    sConfig.LoadConfig();
                 }
                     
                 return sConfig;
@@ -34,7 +33,7 @@ namespace LitEngineEditor
         public ExportWType ExWType { get; protected set; }
         public static void RestConfig()
         {
-            Config.LoadConfig();
+
         }
         public ExportBase()
         {

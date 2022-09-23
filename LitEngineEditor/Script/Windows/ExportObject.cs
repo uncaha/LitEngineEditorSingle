@@ -37,7 +37,7 @@ namespace LitEngineEditor
             ExportSetting.Instance.sSelectedPlatm = GUILayout.SelectionGrid(ExportSetting.Instance.sSelectedPlatm, sPlatformList, 3);
             ExportSetting.Instance.sCompressed = GUILayout.SelectionGrid(ExportSetting.Instance.sCompressed, sCompressed, 2);
             ExportSetting.Instance.sBuildType = GUILayout.SelectionGrid(ExportSetting.Instance.sBuildType, sBuildType, 4);
-            ExportSetting.Instance.sPathType = GUILayout.SelectionGrid(ExportSetting.Instance.sPathType, sPathType, 2);
+            //ExportSetting.Instance.sPathType = GUILayout.SelectionGrid(ExportSetting.Instance.sPathType, sPathType, 2);
 
             if (oldSelectedPlatm != ExportSetting.Instance.sSelectedPlatm
                 || oldcompressed != ExportSetting.Instance.sCompressed
@@ -90,7 +90,7 @@ namespace LitEngineEditor
                     NeedSaveSetting();
                 }
                 if (string.IsNullOrEmpty(ExportSetting.Instance.sMoveAssetsFilePath)) return;
-                Config.LoadConfig();
+
                 BuildTarget _target = sBuildTarget[ExportSetting.Instance.sSelectedPlatm];
                 string tpath = GetExportPath(_target);
                 MoveToPath(tpath, ExportSetting.Instance.sMoveAssetsFilePath, ExportConfig.GetTartFolder(_target));
@@ -358,7 +358,7 @@ namespace LitEngineEditor
 
         static public void MoveBUndleToStreamingPath(BuildTarget _target)
         {
-            Config.LoadConfig();
+
             string tpath = GetExportPath(_target);
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sStreamingBundleFolder + ExportConfig.sResDataPath;
             tfullpath = tfullpath.Replace("\\", "/");
@@ -368,7 +368,7 @@ namespace LitEngineEditor
 
         static public void MoveBundleToSideDate(BuildTarget _target)
         {
-            Config.LoadConfig();
+
             string tpath = GetExportPath(_target);
             string tfullpath = System.IO.Directory.GetCurrentDirectory() + "\\" + Config.sEditorBundleFolder + ExportConfig.sResDataPath;
             tfullpath = tfullpath.Replace("\\", "/");

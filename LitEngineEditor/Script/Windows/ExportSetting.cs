@@ -32,9 +32,9 @@ namespace LitEngineEditor
             }
         }
 
-        public int sCompressed = 1;
+        public int sCompressed = 0;
         public int sBuildType = 0;
-        public int sPathType = 0;
+        public int sPathType = 1;
         public int sSelectedPlatm = 0;
 
         public string sMoveAssetsFilePath = "";

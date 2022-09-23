@@ -127,11 +127,7 @@ namespace ExportTool
                     _write.Write(float.Parse(_value, CultureInfo.InvariantCulture));
                     break;
                 case "string":
-                {
-                    byte[] tbytes = System.Text.UTF8Encoding.UTF8.GetBytes(_value);
-                    _write.Write(tbytes.Length);
-                    _write.Write(tbytes);
-                }
+                    _write.Write(_value);
                     break;
                 case "long":
                     _write.Write(long.Parse(_value, CultureInfo.InvariantCulture));
