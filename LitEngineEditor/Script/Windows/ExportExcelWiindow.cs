@@ -12,7 +12,7 @@ namespace LitEngineEditor
     {
         private Vector2 mScrollPosition = new Vector2(0,40);
         private StringBuilder mContext = new StringBuilder();
-        protected string filestag = "*.xls";
+        protected string filestag = "*.*";
         public ExportExcelWiindow() : base()
         {
             ExWType = ExportWType.ExcelWindow;
@@ -80,26 +80,37 @@ namespace LitEngineEditor
 
             if (GUILayout.Button("Export Bytes"))
             {
-                if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
-                if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
-                {
-                    string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath, filestag, SearchOption.AllDirectories);
-                    foreach (string filename in files)
-                    {
-                        ExcelClass texcel = new ExcelClass(filename, ExportSetting.Instance.sExcelBytesPath);
-                        texcel.SaveFile();
-                        texcel.Close();
-                    }
-                    DLog.LogFormat("Complete  Export Data .count = {0}", files.Length);
-                    UnityEditor.AssetDatabase.Refresh();
-                }
+                WriteBytesFile();
             }
 
             if (GUILayout.Button("Export C#"))
             {
-                if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelSharpPath)) return;
                 WriteShapFile();
             }
+            
+            if (GUILayout.Button("Export Json"))
+            {
+                WriteJsonFile();
+            }
+        }
+        
+        string[] GetExcelFiles()
+        {
+           
+            string[] tfiles = Directory.GetFiles(ExportSetting.Instance.sExcelPath, "*.*", SearchOption.AllDirectories);
+
+            List<string> tlist = new List<string>();
+
+            foreach (var cur in tfiles)
+            {
+                if (cur.EndsWith(".xls") || cur.EndsWith(".xlsx"))
+                {
+                    tlist.Add(cur);
+                }
+            }
+
+            
+            return tlist.ToArray();
         }
 
         public void RestFileList()
@@ -123,11 +134,30 @@ namespace LitEngineEditor
             }
 
         }
+
+        private void WriteBytesFile()
+        {
+            if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
+            if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
+            {
+                string[] files = GetExcelFiles();
+                foreach (string filename in files)
+                {
+                    ExcelClass texcel = new ExcelClass(filename, ExportSetting.Instance.sExcelBytesPath);
+                    texcel.SaveFile();
+                    texcel.Close();
+                }
+                DLog.LogFormat("Complete  Export Data .filecount = {0}", files.Length);
+                UnityEditor.AssetDatabase.Refresh();
+            }
+        }
+        
         private void WriteShapFile()
         {
+            if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelSharpPath)) return;
             if (EditorUtility.DisplayDialog("Export C#", " Start Export C#?", "ok", "cancel"))
             {
-                string[] files = Directory.GetFiles(ExportSetting.Instance.sExcelPath, filestag, SearchOption.AllDirectories);
+                string[] files = GetExcelFiles();
                 List<string> tcfgs = new List<string>();
                 foreach (string filename in files)
                 {
@@ -140,7 +170,24 @@ namespace LitEngineEditor
                 ExportConfigManager tem = new ExportConfigManager(ExportSetting.Instance.sExcelSharpPath + "/ConfigManager.cs", tcfgs);
                 tem.StartExport();
 
-                DLog.LogFormat("Complete  Export C# .count = {0}", files.Length);
+                DLog.LogFormat("Complete  Export C# .filecount = {0}", files.Length);
+                UnityEditor.AssetDatabase.Refresh();
+            }
+        }
+        
+        private void WriteJsonFile()
+        {
+            if (string.IsNullOrEmpty(ExportSetting.Instance.sExcelBytesPath)) return;
+            if (EditorUtility.DisplayDialog("Export To Bytes", " Start Export?", "ok", "cancel"))
+            {
+                string[] files = GetExcelFiles();
+                foreach (string filename in files)
+                {
+                    ExcelClass texcel = new ExcelClass(filename, ExportSetting.Instance.sExcelBytesPath);
+                    texcel.SaveToJson();
+                    texcel.Close();
+                }
+                DLog.LogFormat("Complete  Export Data .filecount = {0}", files.Length);
                 UnityEditor.AssetDatabase.Refresh();
             }
         }

@@ -29,7 +29,7 @@ namespace LitEngineEditor
             }
         }
 
-        public static string filePath => $"{UnityEngine.Application.dataPath}/{sSavedCfg}";
+        public static string filePath => $"{ExportObject.GetFormatPath(System.IO.Directory.GetCurrentDirectory())}/{sSavedCfg}";
 
         public int sCompressed = 0;
         public int sBuildType = 0;
