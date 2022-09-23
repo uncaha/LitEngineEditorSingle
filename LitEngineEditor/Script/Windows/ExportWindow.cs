@@ -11,14 +11,17 @@ namespace LitEngineEditor
         [UnityEditor.MenuItem("LitEngine/ExportTool")]
         static void Init()
         {
-            if (window == null)
+            if (window != null)
             {
-                window = (ExportWindow)EditorWindow.GetWindow(typeof(ExportWindow));
-                window.minSize = new Vector2(430, 450);
-                window.maxSize = new Vector2(500, 500);
-                window.name = "ExportTool";
+                window.Close();
             }
-            ExportBase.RestConfig();
+            
+            window = (ExportWindow)EditorWindow.GetWindow(typeof(ExportWindow));
+            window.minSize = new Vector2(430, 450);
+            window.maxSize = new Vector2(500, 500);
+            window.name = "ExportTool";
+                
+            window.InitGUI();
             window.Show();
             window.Focus();
         }
@@ -33,7 +36,7 @@ namespace LitEngineEditor
 
         public ExportWindow()
         {
-            InitGUI();
+            
         }
 
         void InitGUI()
