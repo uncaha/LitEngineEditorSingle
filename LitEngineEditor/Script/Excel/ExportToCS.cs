@@ -29,6 +29,9 @@ namespace ExportTool
                     File.Delete(tempFile);
                 tfile = File.OpenWrite(tempFile);
                 twt = new TextWriter(tfile);
+                
+                var tfirstTypeStr = data.objects[ExcelData.sTypeLine, 0];
+                var tfirstNameStr = data.objects[ExcelData.sFieldNameLine, 0];
 
                 twt.WriteLine("using LitEngine;");
                 twt.WriteLine("using LitEngine.IO;");
@@ -36,48 +39,60 @@ namespace ExportTool
                 twt.WriteLine("namespace Config{").Indent();
                 twt.WriteLine($"public class {className} : ConfigBase{"{"}").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{className}.bytes{'"'};");
-                twt.WriteLine("protected Dictionary<int,Data> mMaps = new Dictionary<int, Data>();");
-                twt.WriteLine("public List<int> Keys { get; private set; }");
+                twt.WriteLine($"public Dictionary<{tfirstTypeStr},Data> Maps {{ get; private set; }} = new Dictionary<{tfirstTypeStr}, Data>();");
+                twt.WriteLine($"public List<{tfirstTypeStr}> Keys {{ get; private set; }}");
+                
                 twt.WriteLine("public List<Data> Values { get; private set; }");
-                twt.WriteLine("public Dictionary<int, Data> Maps { get { return mMaps; } }");
 
                 twt.WriteLine("public class Data{").Indent();
                 for (int i = 0; i < data.c; i++)
                 {
                     if (!data.IsNeed(i)) continue;
-                    twt.WriteLine($"public readonly {data.objects[ExcelData.sTypeLine, i]} {data.objects[ExcelData.sFieldNameLine, i]};");
+                    var ttypeStr = data.objects[ExcelData.sTypeLine, i];
+                    var tnameStr = data.objects[ExcelData.sFieldNameLine, i];
+                    twt.WriteLine($"public readonly {ttypeStr} {tnameStr};");
                 }
                 twt.WriteLine("public Data(LitEngine.IO.AESReader _reader){").Indent();
+                
                 for (int i = 0; i < data.c; i++)
                 {
                     if (!data.IsNeed(i)) continue;
-                    WriteReadStr(twt, data.objects[ExcelData.sTypeLine, i], data.objects[ExcelData.sFieldNameLine, i]);
+                    var ttypeStr = data.objects[ExcelData.sTypeLine, i];
+                    var tnameStr = data.objects[ExcelData.sFieldNameLine, i];
+                    WriteReadStr(twt, ttypeStr, tnameStr);
                 }
                 twt.Outdent().WriteLine("}");
                 twt.Outdent().WriteLine("}");
 
-                twt.WriteLine($"public {className}(){"{"}").Indent();
+                twt.WriteLine($"public {className}(){{").Indent();
                 twt.WriteLine("byte[] tbys = LitEngine.LoaderManager.LoadConfigFile(kConfigfile);");
                 twt.WriteLine("if (tbys == null) return;");
-                twt.WriteLine("Values = new List<Data>();");
+                
                 twt.WriteLine("AESReader treader = new AESReader(tbys);");
                 twt.WriteLine("int trow = treader.ReadInt32();");
+                twt.WriteLine("Values = new List<Data>(trow);");
                 twt.WriteLine("for (int i = 0; i < trow; i++){").Indent();
                 twt.WriteLine("Data tcfg = new Data(treader);");
-                twt.WriteLine($"mMaps.Add(tcfg.{data.objects[ExcelData.sFieldNameLine, 0]}, tcfg);");
+                
+                twt.WriteLine($"Maps.Add(tcfg.{tfirstNameStr}, tcfg);");
+                
                 twt.WriteLine("Values.Add(tcfg);");
                 twt.Outdent().WriteLine("}");
                 twt.WriteLine("treader.Close();");
-                twt.WriteLine("Keys  = new List<int>(mMaps.Keys);");
+                
+                //TODO
+                twt.WriteLine($"Keys  = new List<{tfirstTypeStr}>(Maps.Keys);");
+                
                 twt.Outdent().WriteLine("}");
 
-
-                twt.WriteLine("public Data this[int _id]{").Indent();
-                twt.WriteLine("get { if (!mMaps.ContainsKey(_id)) return null; return mMaps[_id]; }");
+                //TODO
+                twt.WriteLine($"public Data this[{tfirstTypeStr} pKey]{{").Indent();
+                
+                twt.WriteLine("get { if (!Maps.ContainsKey(pKey)) return null; return Maps[pKey]; }");
                 twt.Outdent().WriteLine("}");
 
                 twt.WriteLine("public int Count{").Indent();
-                twt.WriteLine("get { return mMaps.Count; }");
+                twt.WriteLine("get { return Maps.Count; }");
                 twt.Outdent().WriteLine("}");
 
 
