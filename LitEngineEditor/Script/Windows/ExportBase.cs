@@ -33,7 +33,7 @@ namespace LitEngineEditor
         public ExportWType ExWType { get; protected set; }
         public static void RestConfig()
         {
-
+            ExportSetting.LoadCFG();
         }
         public ExportBase()
         {

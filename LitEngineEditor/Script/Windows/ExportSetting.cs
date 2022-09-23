@@ -61,6 +61,19 @@ namespace LitEngineEditor
         {
             
         }
+
+        static public void LoadCFG()
+        {
+            if (sIntance != null)
+            {
+                DataConvert.MergeFromJson(sIntance, File.ReadAllText(filePath));
+            }
+            else
+            {
+                var tins = Instance;
+            }
+            
+        }
      
         static public void SaveCFG()
         {
