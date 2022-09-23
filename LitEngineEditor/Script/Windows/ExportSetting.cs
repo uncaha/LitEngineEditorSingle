@@ -1,36 +1,35 @@
 ﻿using System.IO;
 using System.Text;
 using LitEngine.Tool;
+using UnityEngine.WSA;
 
 namespace LitEngineEditor
 {
     public class ExportSetting
     {
         #region saved
-        private const string sSavedCfg = "ExCfg.json";
-        private static string filePath = System.IO.Directory.GetCurrentDirectory() + "\\Assets\\Editor\\";
+        private const string sSavedCfg = "LEECfg.json";
+        
         static private ExportSetting sIntance = null;
+
         static public ExportSetting Instance
         {
             get
             {
                 if (sIntance == null)
                 {
-                    string tfullpath = filePath + sSavedCfg;
-                    if (!File.Exists(tfullpath))
+                    sIntance = new ExportSetting();
+                    if (!File.Exists(filePath))
                     {
-                        sIntance = new ExportSetting();
+                        DataConvert.MergeFromJson(sIntance, File.ReadAllText(filePath));
                     }
-                    else
-                    {
-                        sIntance = DataConvert.FromJson<ExportSetting>(File.ReadAllText(tfullpath));
-                    }
-
                 }
-                    
+
                 return sIntance;
             }
         }
+
+        public static string filePath => $"{UnityEngine.Application.dataPath}/{sSavedCfg}";
 
         public int sCompressed = 0;
         public int sBuildType = 0;
@@ -66,12 +65,9 @@ namespace LitEngineEditor
         static public void SaveCFG()
         {
             if (sIntance == null) return;
-            string tfullpath = filePath + sSavedCfg;
-            DLog.Log("save:"+ tfullpath);
-            if (!Directory.Exists(filePath))
-                Directory.CreateDirectory(filePath);
+            DLog.Log("save:"+ filePath);
             string tjson = DataConvert.ToJson(sIntance);
-            File.WriteAllText(tfullpath, tjson);
+            File.WriteAllText(filePath, tjson);
 
         }
     }
