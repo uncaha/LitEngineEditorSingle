@@ -26,10 +26,14 @@ namespace ExportTool
                 twt.Write("{");
                 for (int i = ExcelData.sStartLine; i < data.r; i++)
                 {
-                    twt.Write($"\"{data.objects[i, 0]}\":{"{"}");
+                    twt.Write($"\"{data.objects[i, 0]}\":{{");
                     for (int j = 1; j < data.c; j++)
                     {
                         if (!data.IsNeed(j)) continue;
+                        if (j > 1)
+                        {
+                            twt.Write(",");
+                        }
                         System.Exception terro = WriteData(twt, data.objects[ExcelData.sTypeLine, j], data.objects[ExcelData.sFieldNameLine, j],data.objects[i, j]);
                         if (terro != null)
                         {
@@ -42,10 +46,6 @@ namespace ExportTool
                                 DLog.LogError($"表 {filename} 生成配置出现错误第{i}行,第{j}列.erro = {terro.ToString()}");
                             }
                             return;
-                        }
-                        if (j < data.c - 1)
-                        {
-                            twt.Write(",");
                         }
                     }
                     twt.Write("}");
