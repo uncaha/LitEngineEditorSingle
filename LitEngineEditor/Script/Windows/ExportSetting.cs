@@ -19,10 +19,7 @@ namespace LitEngineEditor
                 if (sIntance == null)
                 {
                     sIntance = new ExportSetting();
-                    if (!File.Exists(filePath))
-                    {
-                        DataConvert.MergeFromJson(sIntance, File.ReadAllText(filePath));
-                    }
+                    sIntance.Load();
                 }
 
                 return sIntance;
@@ -62,11 +59,16 @@ namespace LitEngineEditor
             
         }
 
+        void Load()
+        {
+            if (!System.IO.File.Exists(filePath)) return;
+            DataConvert.MergeFromJson(this, File.ReadAllText(filePath));
+        }
         static public void LoadCFG()
         {
             if (sIntance != null)
             {
-                DataConvert.MergeFromJson(sIntance, File.ReadAllText(filePath));
+                sIntance.Load();
             }
             else
             {

@@ -206,10 +206,5 @@
     <Compile Include="Script\Excel\ExcelClass.cs" />
     <Compile Include="Script\Excel\TextWriter.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="AppConfig.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
