@@ -106,7 +106,7 @@ namespace ExportTool
                 
                 //ContainsKey
                 twt.WriteLine($"public bool ContainsKey({tfirstTypeStr} pKey){{").Indent();
-                twt.WriteLine("return Maps.ContainsKey(pKey)");
+                twt.WriteLine("return Maps.ContainsKey(pKey);");
                 twt.Outdent().WriteLine("}");
                 
 
