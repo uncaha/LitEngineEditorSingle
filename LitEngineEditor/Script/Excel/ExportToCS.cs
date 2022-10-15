@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ExportTool
@@ -37,7 +38,7 @@ namespace ExportTool
                 twt.WriteLine("using LitEngine.IO;");
                 twt.WriteLine("using System.Collections.Generic;");
                 twt.WriteLine("namespace Config{").Indent();
-                twt.WriteLine($"public class {className} {{").Indent();
+                twt.WriteLine($"public partial class {className} {{").Indent();
                 twt.WriteLine($"public const string kConfigfile = {'"'}{className}.bytes{'"'};");
                 twt.WriteLine($"public Dictionary<{tfirstTypeStr},Data> Maps {{ get; private set; }} = new Dictionary<{tfirstTypeStr}, Data>();");
                 twt.WriteLine($"public List<{tfirstTypeStr}> Keys {{ get; private set; }}");
@@ -102,7 +103,12 @@ namespace ExportTool
                 twt.WriteLine("public int Count{").Indent();
                 twt.WriteLine("get { return Maps.Count; }");
                 twt.Outdent().WriteLine("}");
-
+                
+                //ContainsKey
+                twt.WriteLine($"public bool ContainsKey({tfirstTypeStr} pKey){{").Indent();
+                twt.WriteLine("return Maps.ContainsKey(pKey)");
+                twt.Outdent().WriteLine("}");
+                
 
                 twt.Outdent().WriteLine("}");
                 twt.Outdent().WriteLine("}");
