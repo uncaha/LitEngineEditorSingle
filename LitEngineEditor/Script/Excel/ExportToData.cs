@@ -117,7 +117,7 @@ namespace ExportTool
         {
             if (!string.IsNullOrEmpty(_value))
             {
-                string[] tarry = _value.Split(',');
+                string[] tarry = _value.Split('|');
                 _write.Write(tarry.Length);
 
                 string tctype = _typestr.Replace("[]", "");
