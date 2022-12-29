@@ -28,20 +28,27 @@ namespace ExportTool
                 int tline = data.r - ExcelData.sStartLine;
                 twt.Write(tline);
                 DLog.LogFormat("共有 {0} 行数据",tline);
+                int twriteLiine = 0;
                 for (int i = ExcelData.sStartLine; i < data.r; i++)
                 {
-                    if(string.IsNullOrEmpty(data.objects[i, 0]))
+                    var tfirst = data.objects[i, data.startC];
+
+                    if (string.IsNullOrEmpty(tfirst))
                     {
-                        twt.Flush();
-                        twt.Close();
-                        tfile.Close();
-                        File.Delete(tempFile);
-                        ShowError(i, 0,"配置表第一列不能为空,请检查配置表.是否有空列,并删除.");
-                        return;
+                        DLog.LogFormat($"导出截至到第{i}行。filename = {filename}");
+                        break;
                     }
-                    for (int j = 0; j < data.c; j++)
+
+                    if (tfirst.StartsWith("#"))
+                    {
+                        continue;
+                    }
+
+                    bool isHaveC = false;
+                    for (int j = data.startC; j < data.c; j++)
                     {
                         if (!data.IsNeed(j)) continue;
+                        isHaveC = true;
                         System.Exception terro = WriteData(twt, data.objects[ExcelData.sTypeLine, j], data.objects[i, j]);
                         if (terro != null)
                         {
@@ -53,13 +60,25 @@ namespace ExportTool
                             return;
                         }
                     }
+                    if (isHaveC)
+                    {
+                        twriteLiine++;
+                    }
+                    
                 }
+
+                twt.Seek(0, SeekOrigin.Begin);
+                twt.Write(twriteLiine);
+                twt.Seek(0, SeekOrigin.End);
+
                 twt.Flush();
                 twt.Close();
                 tfile.Close();
                 if (File.Exists(filename))
                     File.Delete(filename);
                 File.Move(tempFile, filename);
+
+                DLog.Log($"导出结束。共 {twriteLiine} 行数据");
             }
             catch (Exception ex)
             {

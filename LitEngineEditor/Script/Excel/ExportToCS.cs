@@ -20,19 +20,28 @@ namespace ExportTool
             tempFile = filename + ".temp";
         }
 
-        public void StartExport()
+        public bool StartExport()
         {
             FileStream tfile = null;
             TextWriter twt = null;
+
+            UnityEngine.Debug.Log($"ExportClass: {className}, startc = {data.startC}");
             try
             {
+                var tfirstTypeStr = data.objects[ExcelData.sTypeLine, data.startC];
+                var tfirstNameStr = data.objects[ExcelData.sFieldNameLine, data.startC];
+
+                if (string.IsNullOrEmpty(tfirstTypeStr) || string.IsNullOrEmpty(tfirstNameStr))
+                {
+                    UnityEngine.Debug.LogError($"ExportClass Error: {className}, startc = {data.startC},TypeStr = {tfirstTypeStr}, NameStr = {tfirstNameStr}");
+                    return false;
+                }
+
                 if (File.Exists(tempFile))
                     File.Delete(tempFile);
                 tfile = File.OpenWrite(tempFile);
                 twt = new TextWriter(tfile);
                 
-                var tfirstTypeStr = data.objects[ExcelData.sTypeLine, 0];
-                var tfirstNameStr = data.objects[ExcelData.sFieldNameLine, 0];
 
                 twt.WriteLine("using LitEngine;");
                 twt.WriteLine("using LitEngine.IO;");
@@ -46,7 +55,7 @@ namespace ExportTool
                 twt.WriteLine("public List<Data> Values { get; private set; }");
 
                 twt.WriteLine("public class Data{").Indent();
-                for (int i = 0; i < data.c; i++)
+                for (int i = data.startC; i < data.c; i++)
                 {
                     if (!data.IsNeed(i)) continue;
                     var ttypeStr = data.objects[ExcelData.sTypeLine, i];
@@ -55,7 +64,7 @@ namespace ExportTool
                 }
                 twt.WriteLine("public Data(System.IO.BinaryReader _reader){").Indent();
                 
-                for (int i = 0; i < data.c; i++)
+                for (int i = data.startC; i < data.c; i++)
                 {
                     if (!data.IsNeed(i)) continue;
                     var ttypeStr = data.objects[ExcelData.sTypeLine, i];
@@ -119,6 +128,8 @@ namespace ExportTool
                     File.Delete(filename);
                 File.Move(tempFile, filename);
 
+                return true;
+
             }
             catch (Exception ex)
             {
@@ -127,7 +138,7 @@ namespace ExportTool
                 DLog.LogError(ex.ToString());
             }
 
-            
+            return false;
         }
 
         public void WriteReadStr(TextWriter _writer, string _typestr, string _valuename)

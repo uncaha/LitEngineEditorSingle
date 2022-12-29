@@ -26,8 +26,8 @@ namespace ExportTool
                 twt.Write("{");
                 for (int i = ExcelData.sStartLine; i < data.r; i++)
                 {
-                    twt.Write($"\"{data.objects[i, 0]}\":{{");
-                    for (int j = 1; j < data.c; j++)
+                    twt.Write($"\"{data.objects[i, data.startC]}\":{{");
+                    for (int j = data.startC + 1; j < data.c; j++)
                     {
                         if (!data.IsNeed(j)) continue;
                         if (j > 1)

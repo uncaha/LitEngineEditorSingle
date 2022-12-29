@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EMIT_ASSEMBLY_INFO;FEAT_COMPILER;FEAT_SERVICEMODEL;PLAT_XMLSERIALIZER;PLAT_BINARYFORMATTER;RELEASE;NET40;RELEASE;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EMIT_ASSEMBLY_INFO;FEAT_COMPILER;FEAT_SERVICEMODEL;PLAT_XMLSERIALIZER;PLAT_BINARYFORMATTER;NET40;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>0</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>

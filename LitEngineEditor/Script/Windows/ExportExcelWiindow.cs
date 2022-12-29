@@ -181,7 +181,7 @@ namespace LitEngineEditor
                 tem.StartExport();
 
                 DLog.LogFormat("Complete  Export C# .filecount = {0}", files.Length);
-                UnityEditor.AssetDatabase.Refresh();
+                //UnityEditor.AssetDatabase.Refresh();
             }
         }
         

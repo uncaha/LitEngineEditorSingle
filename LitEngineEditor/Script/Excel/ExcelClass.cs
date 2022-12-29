@@ -15,6 +15,8 @@ namespace ExportTool
         public const int sTypeLine = 2;
         public const int sFieldNameLine = 3;
         public const string sNeedType = "c";
+
+        public int startC { get; private set; }
         public string name { get; private set; }
         public int c { get; private set; }
         public int r { get; private set; }
@@ -23,8 +25,10 @@ namespace ExportTool
 
         public bool IsNeed(int col)
         {
-            string tcs = objects[sCSLine, col];
-            return !string.IsNullOrEmpty(tcs) && tcs.Contains(sNeedType);
+            string tcs = objects[sCSLine, col]?.ToLowerInvariant().Trim();
+            if (string.IsNullOrEmpty(tcs)) return false;
+
+            return tcs.StartsWith(sNeedType) || tcs.Equals("sc");
         }
         public void ReadExcelToArray(Worksheet pSheet)
         {
@@ -51,6 +55,16 @@ namespace ExportTool
 
             inited = true;
             r = i;
+
+            for (int j = 0; j < c; j++)
+            {
+                var cur = tcells[i, j]?.StringValue.ToLowerInvariant().Trim();
+                if(cur.StartsWith(sNeedType))
+                {
+                    startC = j;
+                    break;
+                }
+            }
         }
     }
     class ExcelClass
@@ -150,9 +164,13 @@ namespace ExportTool
                 string tfullname = savepath + "/" + curSheet.Name + ".cs";
 
                 ExportToCS tcs = new ExportToCS(curSheet.Name, tfullname, tdata);
-                tcs.StartExport();
-                
-                ret.Add(curSheet.Name);
+                bool isSuccess = tcs.StartExport();
+
+                if (isSuccess)
+                {
+                    ret.Add(curSheet.Name);
+                }
+               
             }
 
             return ret;
