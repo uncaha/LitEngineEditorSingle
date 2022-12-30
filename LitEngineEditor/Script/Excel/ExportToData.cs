@@ -31,17 +31,25 @@ namespace ExportTool
                 int twriteLiine = 0;
                 for (int i = ExcelData.sStartLine; i < data.r; i++)
                 {
+                    var tfirst0 = data.objects[i, 0];
+                    if (string.IsNullOrEmpty(tfirst0))
+                    {
+                        DLog.LogFormat($"导出截至到第{i}行。filename = {filename}");
+                        break;
+                    }
+
+                    if (tfirst0.StartsWith("#"))
+                    {
+                        continue;
+                    }
+
+
                     var tfirst = data.objects[i, data.startC];
 
                     if (string.IsNullOrEmpty(tfirst))
                     {
                         DLog.LogFormat($"导出截至到第{i}行。filename = {filename}");
                         break;
-                    }
-
-                    if (tfirst.StartsWith("#"))
-                    {
-                        continue;
                     }
 
                     bool isHaveC = false;

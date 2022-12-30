@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Aspose.Cells;
-
+using System.Diagnostics;
 
 namespace ExportTool
 {
@@ -42,9 +42,7 @@ namespace ExportTool
             int i = 0;
             for (; i < r; i++)
             {
-                var tfirst = tcells[i, 0];
-                if (string.IsNullOrEmpty(tfirst.StringValue?.Trim())) break;
-                
+
                 for (int j = 0; j < c; j++)
                 {
                     var cur = tcells[i, j];
@@ -58,10 +56,11 @@ namespace ExportTool
 
             for (int j = 0; j < c; j++)
             {
-                var cur = tcells[i, j]?.StringValue.ToLowerInvariant().Trim();
+                var cur = tcells[0, j]?.StringValue.ToLowerInvariant().Trim();
                 if(cur.StartsWith(sNeedType))
                 {
                     startC = j;
+                    UnityEngine.Debug.Log($"初始化 {name} 数据。第{startC}列开始。");
                     break;
                 }
             }

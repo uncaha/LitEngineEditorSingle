@@ -33,7 +33,7 @@ namespace ExportTool
 
                 if (string.IsNullOrEmpty(tfirstTypeStr) || string.IsNullOrEmpty(tfirstNameStr))
                 {
-                    UnityEngine.Debug.LogError($"ExportClass Error: {className}, startc = {data.startC},TypeStr = {tfirstTypeStr}, NameStr = {tfirstNameStr}");
+                    ShowError($"ExportClass Error: {className}, startc = {data.startC},TypeStr = {tfirstTypeStr}, NameStr = {tfirstNameStr}");
                     return false;
                 }
 
@@ -60,6 +60,12 @@ namespace ExportTool
                     if (!data.IsNeed(i)) continue;
                     var ttypeStr = data.objects[ExcelData.sTypeLine, i];
                     var tnameStr = data.objects[ExcelData.sFieldNameLine, i];
+
+                    if (string.IsNullOrEmpty(ttypeStr) || string.IsNullOrEmpty(tnameStr))
+                    {
+                        throw new Exception($"第{i}列字段错误 type={ttypeStr}, fieldName={tnameStr}");
+                    }
+
                     twt.WriteLine($"public readonly {ttypeStr} {tnameStr};");
                 }
                 twt.WriteLine("public Data(System.IO.BinaryReader _reader){").Indent();
@@ -69,6 +75,13 @@ namespace ExportTool
                     if (!data.IsNeed(i)) continue;
                     var ttypeStr = data.objects[ExcelData.sTypeLine, i];
                     var tnameStr = data.objects[ExcelData.sFieldNameLine, i];
+
+
+                    if (string.IsNullOrEmpty(ttypeStr) || string.IsNullOrEmpty(tnameStr))
+                    {
+                        throw new Exception($"第{i}列字段错误 type={ttypeStr}, fieldName={tnameStr}");
+                    }
+
                     WriteReadStr(twt, ttypeStr, tnameStr);
                 }
                 twt.Outdent().WriteLine("}");
@@ -135,7 +148,7 @@ namespace ExportTool
             {
                 twt?.Close();
                 tfile?.Close();
-                DLog.LogError(ex.ToString());
+                ShowError(ex.Message);
             }
 
             return false;
@@ -182,6 +195,15 @@ namespace ExportTool
                 }
             }
 
+        }
+
+
+        void ShowError(string pErro)
+        {
+            if (UnityEditor.EditorUtility.DisplayDialog("Error", $"表 {filename} 生成配置出现错误.erro = {pErro}", "ok"))
+            {
+                DLog.LogError($"表 {filename} 生成配置出现错误.erro = {pErro}");
+            }
         }
     }
 }

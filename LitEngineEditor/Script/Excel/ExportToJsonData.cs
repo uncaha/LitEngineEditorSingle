@@ -26,6 +26,34 @@ namespace ExportTool
                 twt.Write("{");
                 for (int i = ExcelData.sStartLine; i < data.r; i++)
                 {
+
+                    var tfirst0 = data.objects[i, 0];
+                    if (string.IsNullOrEmpty(tfirst0))
+                    {
+                        DLog.LogFormat($"导出截至到第{i}行。filename = {filename}");
+                        break;
+                    }
+
+                    if (tfirst0.StartsWith("#"))
+                    {
+                        continue;
+                    }
+
+
+                    var tfirst = data.objects[i, data.startC];
+
+                    if (string.IsNullOrEmpty(tfirst))
+                    {
+                        DLog.LogFormat($"导出截至到第{i}行。filename = {filename}");
+                        break;
+                    }
+
+
+                    if (i > ExcelData.sStartLine)
+                    {
+                        twt.Write(",");
+                    }
+
                     twt.Write($"\"{data.objects[i, data.startC]}\":{{");
                     for (int j = data.startC + 1; j < data.c; j++)
                     {
@@ -49,11 +77,6 @@ namespace ExportTool
                         }
                     }
                     twt.Write("}");
-
-                    if (i < data.r - 1)
-                    {
-                        twt.Write(",");
-                    }
                 }
                 twt.Write("}");
                 twt.Flush();
