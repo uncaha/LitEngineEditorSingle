@@ -115,6 +115,8 @@ namespace ExportTool
 
             foreach (var curSheet in mWorkbook.Worksheets)
             {
+                if(curSheet.Name.StartsWith("#")) continue;
+                
                 ExcelData tdata = GetContentHaveValue(curSheet);
                 string tfullname = savepath + "/" + curSheet.Name + ".json";
 
@@ -128,6 +130,8 @@ namespace ExportTool
             if (mWorkbook == null) return;
             foreach (var curSheet in mWorkbook.Worksheets)
             {
+                if(curSheet.Name.StartsWith("#")) continue;
+                
                 ExcelData tdata = GetContentHaveValue(curSheet);
                 string tfullname = savepath + "/" + curSheet.Name + ".bytes";
 
@@ -142,6 +146,8 @@ namespace ExportTool
             if (mWorkbook == null) return;
             foreach (var curSheet in mWorkbook.Worksheets)
             {
+                if(curSheet.Name.StartsWith("#")) continue;
+                
                 Console.WriteLine("Export " + curSheet.Name);
                 ExcelData tdata = GetContentHaveValue(curSheet);
                 string tfullname = savepath + "/" + curSheet.Name + ".bytes";
@@ -159,6 +165,8 @@ namespace ExportTool
             var ret = new List<string>();
             foreach (var curSheet in mWorkbook.Worksheets)
             {
+                if(curSheet.Name.StartsWith("#")) continue;
+                
                 ExcelData tdata = GetContentHaveValue(curSheet);
                 string tfullname = savepath + "/" + curSheet.Name + ".cs";
 
