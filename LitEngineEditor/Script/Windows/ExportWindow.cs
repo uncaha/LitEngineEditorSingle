@@ -44,7 +44,7 @@ namespace LitEngineEditor
             ExportBase.RestConfig();
             AddWindow<ExportObject>();
             AddWindow<ExportExcelWiindow>();
-            AddWindow<ExportProtoTool>();
+            //AddWindow<ExportProtoTool>();
             AddWindow<EncryptTool>();
             AddWindow<MeshTool>();
         }
